@@ -2,95 +2,98 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:flutter_firebase/features/user_auth/presentation/widgets/app_navigation.dart';
+import 'package:flutter_firebase/features/user_auth/presentation/pages/room_page.dart';
+import 'package:flutter_firebase/features/user_auth/presentation/widgets/bottom_navigation.dart';
 
 import '../../../../global/common/toast.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  const HomePage({Key? key, required this.navigationService}) : super(key: key);
+
+  final NavigationService navigationService; // Uncomment this line
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+  // late NavigationService navigationService;
+
+  // _HomePageState(this.navigationService);
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  int _currentIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text("HomePage"),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Center(
-            child: Text(
-              "Welcome Home!",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 19),
-            ),
-          ),
-          SizedBox(
-            height: 30,
-          ),
-          GestureDetector(
-            onTap: () {
-              FirebaseAuth.instance.signOut();
-              Navigator.pushNamed(context, "/login");
-              showToast(message: "Successfully signed out");
+        title: const Text("Welcome Home!"),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () {
+              _scaffoldKey.currentState!.openEndDrawer();
             },
-            child: Container(
-              height: 45,
-              width: 100,
-              decoration: BoxDecoration(
-                color: Colors.blue,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Center(
-                child: Text(
-                  "Sign out",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              // Pindah ke halaman "movie_page"
-              Navigator.pushNamed(context, "/movie_page");
-            },
-            child: Container(
-              height: 45,
-              width: 100,
-              decoration: BoxDecoration(
-                color: Colors.green, // Ganti warna sesuai preferensi Anda
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Center(
-                child: Text(
-                  "Movies",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          SizedBox(
-              height:
-                  20), // Tambahkan jarak antara tombol Sign Out dan CalendarWidget
-          Expanded(
-            child:
-                CalendarWidget(), // Tampilkan CalendarWidget di bawah tombol Sign Out
           ),
         ],
       ),
+      endDrawer: Drawer(
+        child: AppNavigation(), // Replace with your AppNavigation
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/background_home.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              child: _buildPage(_currentIndex),
+            ),
+          ],
+        ),
+      ),
+      bottomNavigationBar: MyBottomNavigationBar(
+        navigationService: widget.navigationService,
+      ),
+    );
+  }
+
+  Widget _buildPage(int index) {
+    switch (index) {
+      case 0:
+        return CalendarWidget();
+      case 1:
+        return PinjamRuanganPage();
+      // case 2:
+      //   return ChatPage(); // Assuming you have a ChatPage widget
+      // case 3:
+      //   return ProfilePage(); // Assuming you have a ProfilePage widget
+      default:
+        return Container();
+    }
+  }
+}
+
+class DrawerMenuItem extends StatelessWidget {
+  final String title;
+  final VoidCallback onTap;
+
+  const DrawerMenuItem({Key? key, required this.title, required this.onTap})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(title),
+      onTap: onTap,
     );
   }
 }
