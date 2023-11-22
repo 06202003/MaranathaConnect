@@ -1,0 +1,179 @@
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+CREATE TABLE "history_pemakaian" (
+  "id" int NOT NULL,
+  "nomor_induk_old" varchar(20) DEFAULT NULL,
+  "nomor_induk_new" varchar(20) NOT NULL,
+  "tanggal" date NOT NULL,
+  "ruangan_old" varchar(20) DEFAULT NULL,
+  "ruangan_new" varchar(20) NOT NULL,
+  "created_at" timestamp NULL DEFAULT NULL,
+  "updated_at" timestamp NULL DEFAULT NULL,
+  "kode_aset" varchar(20) NOT NULL
+)
+
+
+CREATE TABLE "history_perbaikan" (
+  "id" int NOT NULL,
+  "tanggal_perbaikan" date DEFAULT NULL,
+  "biaya" int DEFAULT NULL,
+  "deskripsi" varchar(255) DEFAULT NULL,
+  "tanggal kerusakan" date NOT NULL,
+  "tanggal_selesai_perbaikan" date DEFAULT NULL,
+  "created_at" timestamp NULL DEFAULT NULL,
+  "updated_at" timestamp NULL DEFAULT NULL,
+  "kode_aset" varchar(20) NOT NULL
+)
+
+
+CREATE TABLE "inventory" (
+  "kode_aset" varchar(20) NOT NULL,
+  "nama" varchar(100) NOT NULL,
+  "merk" varchar(45) NOT NULL,
+  "tanggal" date NOT NULL,
+  "harga" int NOT NULL,
+  "nilai_residu" int DEFAULT NULL,
+  "masa_manfaat" int DEFAULT NULL,
+  "depresiasi" int DEFAULT NULL,
+  "deskripsi" varchar(255) NOT NULL,
+  "status" varchar(20) NOT NULL,
+  "id_kategori" varchar(3) NOT NULL,
+  "tahun_1" int DEFAULT NULL,
+  "tahun_2" int DEFAULT NULL,
+  "tahun_3" int DEFAULT NULL,
+  "tahun_4" int DEFAULT NULL,
+  "img_url" varchar(255) DEFAULT NULL,
+  "vendor" varchar(100) DEFAULT NULL,
+  "nomor_induk" varchar(20) NOT NULL,
+  "created_at" timestamp NULL DEFAULT NULL,
+  "updated_at" timestamp NULL DEFAULT NULL
+)
+
+
+CREATE TABLE "karyawan" (
+  "nomor_induk" varchar(20) NOT NULL,
+  "gambar" varchar(255) DEFAULT NULL,
+  "nama" varchar(100) NOT NULL,
+  "gender" tinyint(1) NOT NULL,
+  "email" varchar(100) NOT NULL,
+  "telepon" varchar(20) NOT NULL,
+  "jabatan" varchar(20) NOT NULL,
+  "divisi" varchar(20) NOT NULL,
+  "alamat" varchar(255) NOT NULL,
+  "created_at" timestamp NULL DEFAULT NULL,
+  "updated_at" timestamp NULL DEFAULT NULL
+)
+
+
+
+CREATE TABLE "kategori" (
+  "id_kategori" varchar(3) NOT NULL,
+  "nama" varchar(100) NOT NULL,
+  "created_at" timestamp NULL DEFAULT NULL,
+  "updated_at" timestamp NULL DEFAULT NULL
+)
+
+
+
+CREATE TABLE "pemakaian" (
+  "id" int NOT NULL,
+  "kode_aset" varchar(20) NOT NULL,
+  "nomor_induk" varchar(20) NOT NULL,
+  "id_ruangan" varchar(5) NOT NULL,
+  "created_at" timestamp NULL DEFAULT NULL,
+  "updated_at" timestamp NULL DEFAULT NULL
+)
+
+
+
+CREATE TABLE "ruangan" (
+  "id_ruangan" varchar(5) NOT NULL,
+  "nama" varchar(45) NOT NULL,
+  "created_at" timestamp NULL DEFAULT NULL,
+  "updated_at" timestamp NULL DEFAULT NULL
+)
+
+
+
+CREATE TABLE "users" (
+  "id" int NOT NULL,
+  "name" varchar(100) NOT NULL,
+  "email" varchar(100) NOT NULL,
+  "password" varchar(255) NOT NULL
+)
+
+
+ALTER TABLE "history_pemakaian"
+  ADD PRIMARY KEY ("id"),
+  ADD KEY "fk_history_pemakaian_inventory1_idx" ("kode_aset");
+
+
+ALTER TABLE "history_perbaikan"
+  ADD PRIMARY KEY ("id"),
+  ADD KEY "fk_history_perbaikan_inventory1_idx" ("kode_aset");
+
+ALTER TABLE "inventory"
+  ADD PRIMARY KEY ("kode_aset"),
+  ADD KEY "fk_inventory_kategori1_idx" ("id_kategori"),
+  ADD KEY "fk_inventory_karyawan1_idx" ("nomor_induk");
+
+
+ALTER TABLE "karyawan"
+  ADD PRIMARY KEY ("nomor_induk");
+
+
+ALTER TABLE "kategori"
+  ADD PRIMARY KEY ("id_kategori");
+
+
+ALTER TABLE "pemakaian"
+  ADD PRIMARY KEY ("id"),
+  ADD KEY "fk_pemakaian_inventory1_idx" ("kode_aset"),
+  ADD KEY "fk_pemakaian_karyawan1_idx" ("nomor_induk"),
+  ADD KEY "fk_pemakaian_ruangan1_idx" ("id_ruangan");
+
+
+ALTER TABLE "ruangan"
+  ADD PRIMARY KEY ("id_ruangan");
+
+
+ALTER TABLE "users"
+  ADD PRIMARY KEY ("id");
+
+
+ALTER TABLE "history_pemakaian"
+  MODIFY "id" int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+
+ALTER TABLE "history_perbaikan"
+  MODIFY "id" int NOT NULL AUTO_INCREMENT;
+
+
+ALTER TABLE "pemakaian"
+  MODIFY "id" int NOT NULL AUTO_INCREMENT;
+
+
+ALTER TABLE "users"
+  MODIFY "id" int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+ALTER TABLE "history_pemakaian"
+  ADD CONSTRAINT "fk_history_pemakaian_inventory1" FOREIGN KEY ("kode_aset") REFERENCES "inventory" ("kode_aset") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+
+ALTER TABLE "history_perbaikan"
+  ADD CONSTRAINT "fk_history_perbaikan_inventory1" FOREIGN KEY ("kode_aset") REFERENCES "inventory" ("kode_aset") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+
+ALTER TABLE "inventory"
+  ADD CONSTRAINT "fk_inventory_karyawan1" FOREIGN KEY ("nomor_induk") REFERENCES "karyawan" ("nomor_induk") ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT "fk_inventory_kategori1" FOREIGN KEY ("id_kategori") REFERENCES "kategori" ("id_kategori") ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+
+ALTER TABLE "pemakaian"
+  ADD CONSTRAINT "fk_pemakaian_inventory1" FOREIGN KEY ("kode_aset") REFERENCES "inventory" ("kode_aset") ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT "fk_pemakaian_karyawan1" FOREIGN KEY ("nomor_induk") REFERENCES "karyawan" ("nomor_induk") ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT "fk_pemakaian_ruangan1" FOREIGN KEY ("id_ruangan") REFERENCES "ruangan" ("id_ruangan") ON DELETE NO ACTION ON UPDATE NO ACTION;
+COMMIT;
