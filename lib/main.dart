@@ -1,15 +1,15 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_firebase/features/user_auth/presentation/themes/app_theme.dart';
+import 'package:flutter_firebase/features/presentation/themes/app_theme.dart';
 import 'package:flutter_firebase/features/app/splash_screen/splash_screen.dart';
-import 'package:flutter_firebase/features/user_auth/presentation/pages/home_page.dart';
-import 'package:flutter_firebase/features/user_auth/presentation/pages/login_page.dart';
-import 'package:flutter_firebase/features/user_auth/presentation/pages/sign_up_page.dart';
-import 'package:flutter_firebase/features/user_auth/presentation/pages/room_page.dart';
-import 'package:flutter_firebase/features/user_auth/presentation/widgets/bottom_navigation.dart';
-
+import 'package:flutter_firebase/features/presentation/pages/home_page.dart';
+import 'package:flutter_firebase/features/presentation/pages/login_page.dart';
+import 'package:flutter_firebase/features/presentation/pages/sign_up_page.dart';
+import 'package:flutter_firebase/features/presentation/pages/room_page.dart';
+import 'package:flutter_firebase/features/presentation/pages/chat_page.dart';
+import 'package:flutter_firebase/features/presentation/routes/navigation_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,7 +25,11 @@ Future main() async {
   } else {
     await Firebase.initializeApp();
   }
-  runApp(MyApp());
+  runApp(
+    ProviderScope(
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -33,6 +37,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: _navigationService.navigatorKey,
       debugShowCheckedModeBanner: false,
       title: 'Flutter Firebase',
       theme: appTheme,
@@ -43,7 +48,9 @@ class MyApp extends StatelessWidget {
         '/login': (context) => LoginPage(),
         '/signUp': (context) => SignUpPage(),
         '/home': (context) => HomePage(navigationService: _navigationService),
-        '/room': (context) => PinjamRuanganPage(),
+        '/room': (context) =>
+            PinjamRuanganPage(navigationService: _navigationService),
+        '/chat': (context) => ChatPage(navigationService: _navigationService),
       },
     );
   }

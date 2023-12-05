@@ -1,11 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_firebase/features/user_auth/presentation/pages/sign_up_page.dart';
-import 'package:flutter_firebase/features/user_auth/presentation/widgets/form_container_widget.dart';
+import 'package:flutter_firebase/features/presentation/pages/sign_up_page.dart';
+import 'package:flutter_firebase/features/presentation/widgets/form_container_widget.dart';
 import 'package:flutter_firebase/global/common/toast.dart';
-import 'package:google_fonts/google_fonts.dart';
-
-import '../../firebase_auth_implementation/firebase_auth_services.dart';
+import '../../service/firebase_auth_implementation/firebase_auth_services.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -68,18 +66,32 @@ class _LoginPageState extends State<LoginPage> {
                   SizedBox(
                     height: 20,
                   ),
-                  FormContainerWidget(
-                    controller: _emailController,
-                    hintText: "Email",
-                    isPasswordField: false,
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(
+                          15), // Set your desired border radius
+                      color: Colors.white, // Set the background color if needed
+                    ),
+                    child: FormContainerWidget(
+                      controller: _emailController,
+                      hintText: "Email",
+                      isPasswordField: false,
+                    ),
                   ),
                   SizedBox(
                     height: 10,
                   ),
-                  FormContainerWidget(
-                    controller: _passwordController,
-                    hintText: "Password",
-                    isPasswordField: true,
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(
+                          15), // Set your desired border radius
+                      color: Colors.white, // Set the background color if needed
+                    ),
+                    child: FormContainerWidget(
+                      controller: _passwordController,
+                      hintText: "Password",
+                      isPasswordField: true,
+                    ),
                   ),
                   SizedBox(
                     height: 30,

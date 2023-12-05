@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_firebase/features/user_auth/firebase_auth_implementation/firebase_auth_services.dart';
-import 'package:flutter_firebase/features/user_auth/presentation/pages/login_page.dart';
-import 'package:flutter_firebase/features/user_auth/presentation/widgets/form_container_widget.dart';
+import 'package:flutter_firebase/features/service/firebase_auth_implementation/firebase_auth_services.dart';
+import 'package:flutter_firebase/features/presentation/pages/login_page.dart';
+import 'package:flutter_firebase/features/presentation/widgets/form_container_widget.dart';
 import 'package:flutter_firebase/global/common/toast.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -147,7 +147,7 @@ class _SignUpPageState extends State<SignUpPage> {
     String email = _emailController.text;
     String password = _passwordController.text;
 
-    User? user = await _auth.signUpWithEmailAndPassword(email, password);
+    User? user = await _auth.signUpWithEmailAndPassword(username,email, password);
 
     setState(() {
       isSigningUp = false;

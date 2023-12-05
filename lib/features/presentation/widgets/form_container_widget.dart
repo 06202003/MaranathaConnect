@@ -37,7 +37,7 @@ class _FormContainerWidgetState extends State<FormContainerWidget> {
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.grey.withOpacity(.35),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(15),
       ),
       child: new TextFormField(
         style: TextStyle(color: Colors.black),

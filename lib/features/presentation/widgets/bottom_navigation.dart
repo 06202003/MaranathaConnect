@@ -1,24 +1,29 @@
 import 'package:flutter/material.dart';
-
-class NavigationService {
-  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-
-  void navigateToPage(String routeName) {
-    navigatorKey.currentState?.pushNamed(routeName);
-  }
-}
+import 'package:flutter_firebase/features/presentation/routes/navigation_service.dart';
 
 class MyBottomNavigationBar extends StatefulWidget {
   final NavigationService navigationService;
+  final int currentIndex; // New property to hold the current index
+  final ValueChanged<int> onTap; // Callback when an item is tapped
 
-  MyBottomNavigationBar({required this.navigationService});
+  MyBottomNavigationBar({
+    required this.navigationService,
+    required this.currentIndex,
+    required this.onTap,
+  });
 
   @override
   _MyBottomNavigationBarState createState() => _MyBottomNavigationBarState();
 }
 
 class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
-  int _currentIndex = 0;
+  late int _currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.currentIndex;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +38,7 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.room),
-          label: 'Ruangan',
+          label: 'Room',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.chat),
@@ -48,8 +53,9 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
       onTap: (index) {
         setState(() {
           _currentIndex = index;
+          widget.onTap(index);
         });
-        _navigateToPage(index);
+        _navigateToPage(index); // Call the method in the state class
       },
     );
   }
@@ -60,7 +66,7 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
         widget.navigationService.navigateToPage('/home');
         break;
       case 1:
-        widget.navigationService.navigateToPage('/ruangan');
+        widget.navigationService.navigateToPage('/room');
         break;
       case 2:
         widget.navigationService.navigateToPage('/chat');
