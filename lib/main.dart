@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_firebase/features/presentation/pages/profile_page.dart';
 import 'package:flutter_firebase/features/presentation/themes/app_theme.dart';
 import 'package:flutter_firebase/features/app/splash_screen/splash_screen.dart';
 import 'package:flutter_firebase/features/presentation/pages/home_page.dart';
@@ -51,6 +52,8 @@ class MyApp extends StatelessWidget {
         '/room': (context) =>
             PinjamRuanganPage(navigationService: _navigationService),
         '/chat': (context) => ChatPage(navigationService: _navigationService),
+        '/profile': (context) =>
+            ProfilePage(navigationService: _navigationService),
       },
     );
   }
