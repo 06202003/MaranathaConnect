@@ -2,7 +2,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_firebase/features/domain/entities/task_entity.dart';
 import 'package:flutter_firebase/features/domain/repositories/task_repository.dart';
-import 'package:flutter_firebase/features/data/datasources/remote_datasource.dart';
+import 'package:flutter_firebase/features/data/datasources/task_remote_datasource.dart';
 import 'package:flutter_firebase/features/data/models/task_model.dart';
 
 final remoteDataSourceProvider = Provider<RemoteDataSource>((ref) {
@@ -26,6 +26,7 @@ class TaskRepositoryImpl implements TaskRepository {
     return taskModels
         .map(
           (model) => TaskEntity(
+            id: model.id,
             title: model.title,
             imageUrl: model.imageUrl,
             description: model.description,

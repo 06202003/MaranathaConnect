@@ -1,5 +1,7 @@
 // organizational_tasks_widget.dart
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+// import 'package:flutter_firebase/features/data/models/task_model.dart';
 import 'package:flutter_firebase/features/domain/repositories/task_repository.dart';
 import 'package:flutter_firebase/features/presentation/widgets/error_retry.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -39,6 +41,12 @@ class OrganizationalTasksWidget extends ConsumerWidget {
           child: SingleChildScrollView(
             child: Column(
               children: [
+                ElevatedButton(
+                  onPressed: () {
+                    _showAddDialog(context, ref);
+                  },
+                  child: Text('Tambah Program Kerja'),
+                ),
                 for (int index = 0; index < taskEntities.length; index++)
                   Column(
                     children: [
@@ -61,5 +69,84 @@ class OrganizationalTasksWidget extends ConsumerWidget {
         );
       },
     );
+  }
+
+  void _showAddDialog(BuildContext context, WidgetRef ref) {
+    TextEditingController titleController = TextEditingController();
+    TextEditingController descriptionController = TextEditingController();
+    TextEditingController imageUrlController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Add New Task'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextField(
+                  controller: titleController,
+                  decoration: InputDecoration(labelText: 'Title'),
+                ),
+                TextField(
+                  controller: descriptionController,
+                  decoration: InputDecoration(labelText: 'Description'),
+                ),
+                TextField(
+                  controller: imageUrlController,
+                  decoration: InputDecoration(labelText: 'Image URL'),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                _addTask(context, ref, titleController.text,
+                    descriptionController.text, imageUrlController.text);
+                Navigator.of(context).pop();
+              },
+              child: Text("Add"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _addTask(BuildContext context, WidgetRef ref, String title,
+      String description, String imageUrl) {
+    try {
+      // Get a reference to the Firestore collection
+      CollectionReference tasksCollection =
+          FirebaseFirestore.instance.collection('tasks');
+
+      // Add a new document with a generated ID
+      tasksCollection.add({
+        'title': title,
+        'description': description,
+        'imageUrl': imageUrl,
+        'date': DateTime.now().toString(),
+      }).then((DocumentReference document) {
+        print('Task added with ID: ${document.id}');
+        ref.refresh(
+            getTasksUsecaseProvider); // Refresh setelah berhasil menambahkan data
+      }).catchError((error) {
+        print('Error adding task: $error');
+        // Handle error
+      });
+
+      // Optionally, you can refresh the task list or perform other actions after adding a new task.
+      ref.refresh(getTasksUsecaseProvider);
+    } catch (e) {
+      print('Error adding task: $e');
+      // Handle the error as needed
+    }
   }
 }
