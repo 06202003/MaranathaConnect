@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_firebase/features/data/datasources/ruangan_remote_datasource.dart';
+import 'package:flutter_firebase/features/data/repositories/ruangan_repository_impl.dart';
+import 'package:flutter_firebase/features/domain/entities/ruangan_entity.dart';
+import 'package:flutter_firebase/features/domain/usecases/get_potential_ruangan_usecase.dart';
+import 'package:flutter_firebase/features/domain/usecases/get_ruangan_usecase.dart';
 import 'package:flutter_firebase/features/presentation/widgets/app_navigation.dart';
 import 'package:flutter_firebase/features/presentation/widgets/bottom_navigation.dart';
 import 'package:flutter_firebase/features/presentation/routes/navigation_service.dart';
+import 'package:flutter_firebase/features/presentation/widgets/potential_ruangan.dart';
+import 'package:flutter_firebase/features/presentation/widgets/rekomendasi_ruangan.dart';
+import 'package:flutter_firebase/features/presentation/widgets/reservasi_ruangan.dart';
 
 class PinjamRuanganPage extends StatefulWidget {
   final NavigationService navigationService;
@@ -14,6 +22,23 @@ class PinjamRuanganPage extends StatefulWidget {
 }
 
 class _PinjamRuanganPageState extends State<PinjamRuanganPage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  int _currentIndex = 1;
+
+  late final GetRekomendasiRuanganUsecase getRekomendasiRuanganUsecase;
+  late final GetPotensialRuanganUsecase getPotensialRuanganUsecase;
+
+  @override
+  void initState() {
+    super.initState();
+    final ruanganRepository = RuanganRepositoryImpl(
+      ruanganDatasource: RuanganDatasource(),
+    );
+    getRekomendasiRuanganUsecase =
+        GetRekomendasiRuanganUsecase(ruanganRepository);
+    getPotensialRuanganUsecase = GetPotensialRuanganUsecase(ruanganRepository);
+  }
+
   void navigateToPage(int index) {
     switch (index) {
       case 0:
@@ -30,9 +55,6 @@ class _PinjamRuanganPageState extends State<PinjamRuanganPage> {
         break;
     }
   }
-
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  int _currentIndex = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -53,8 +75,49 @@ class _PinjamRuanganPageState extends State<PinjamRuanganPage> {
       endDrawer: Drawer(
         child: AppNavigation(),
       ),
-      body: Center(
-        child: Text('Ini Halaman Pinjam Ruangan'),
+      body: FutureBuilder<List<RuanganEntity>>(
+        future: getRekomendasiRuanganUsecase.execute(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text('No recommended rooms available.'));
+          } else {
+            final recommendedRooms = snapshot.data!;
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Rekomendasi Ruangan',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                RekomendasiRuanganCarousel(recommendedRooms: recommendedRooms),
+                Text(
+                  'Ruangan yang sering dipinjam',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                PotensialRuanganList(potentialRooms: recommendedRooms),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ReservationForm(),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                    minimumSize: Size(double.infinity, 0),
+                  ),
+                  child: Text('Pinjam Ruangan'),
+                ),
+              ],
+            );
+          }
+        },
       ),
       bottomNavigationBar: MyBottomNavigationBar(
         navigationService: widget.navigationService,

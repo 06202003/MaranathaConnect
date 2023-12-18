@@ -43,6 +43,7 @@ class TaskListTile extends StatelessWidget {
       onTap: () {
         _showDescriptionModal(
           context,
+          task.id ?? "No id available",
           task.title ?? "No Title available",
           task.description ?? 'No description available',
           task.imageUrl ?? "No Image available",
@@ -164,13 +165,13 @@ class TaskListTile extends StatelessWidget {
     );
   }
 
-  void _showDescriptionModal(
-      BuildContext context, String title, String description, String imageUrl) {
+  void _showDescriptionModal(BuildContext context, String id, String title,
+      String description, String imageUrl) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(title),
+          title: Text(id),
           content: Container(
             width: MediaQuery.of(context).size.width * 0.7,
             height: MediaQuery.of(context).size.height *
