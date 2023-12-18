@@ -43,7 +43,7 @@ class RuanganDatasource {
     // Replace this with your actual implementation for recommended rooms
     // For now, let's return the first two rooms as recommended
     final ruanganData = await getRuanganData();
-    return ruanganData.sublist(0, 2).map((model) => model.toEntity()).toList();
+    return ruanganData.sublist(0, 3).map((model) => model.toEntity()).toList();
   }
 
   Future<List<RuanganEntity>> getPotensialRuanganData() async {

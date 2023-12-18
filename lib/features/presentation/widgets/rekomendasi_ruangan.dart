@@ -8,7 +8,8 @@ class RekomendasiRuanganCarousel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return Align(
+      alignment: Alignment.centerLeft,
       child: Container(
         height: 200,
         child: recommendedRooms.isNotEmpty

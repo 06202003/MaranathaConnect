@@ -87,7 +87,8 @@ class _PinjamRuanganPageState extends State<PinjamRuanganPage> {
           } else {
             final recommendedRooms = snapshot.data!;
             return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
                   'Rekomendasi Ruangan',

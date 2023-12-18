@@ -8,7 +8,8 @@ class PotensialRuanganList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return Align(
+      alignment: Alignment.topCenter,
       child: Container(
         height: 200,
         child: potentialRooms.isNotEmpty
