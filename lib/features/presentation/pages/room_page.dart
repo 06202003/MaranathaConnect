@@ -76,48 +76,74 @@ class _PinjamRuanganPageState extends State<PinjamRuanganPage> {
         child: AppNavigation(),
       ),
       body: FutureBuilder<List<RuanganEntity>>(
-        future: getRekomendasiRuanganUsecase.execute(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No recommended rooms available.'));
-          } else {
-            final recommendedRooms = snapshot.data!;
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'Rekomendasi Ruangan',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                RekomendasiRuanganCarousel(recommendedRooms: recommendedRooms),
-                Text(
-                  'Ruangan yang sering dipinjam',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                PotensialRuanganList(potentialRooms: recommendedRooms),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ReservationForm(),
+        future: getPotensialRuanganUsecase.execute(),
+        builder: (context, potentialSnapshot) {
+          return FutureBuilder<List<RuanganEntity>>(
+            future: getRekomendasiRuanganUsecase.execute(),
+            builder: (context, recommendedSnapshot) {
+              if (potentialSnapshot.connectionState ==
+                      ConnectionState.waiting ||
+                  recommendedSnapshot.connectionState ==
+                      ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              } else if (potentialSnapshot.hasError ||
+                  recommendedSnapshot.hasError) {
+                return Center(
+                    child: Text(
+                        'Error: ${potentialSnapshot.error ?? recommendedSnapshot.error}'));
+              } else {
+                final potentialRooms = potentialSnapshot.data!;
+                final recommendedRooms = recommendedSnapshot.data!;
+
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Rekomendasi Ruangan',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    RekomendasiRuanganCarousel(
+                        recommendedRooms: recommendedRooms),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      'Ruangan yang sering dipinjam',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    PotensialRuanganList(potentialRooms: potentialRooms),
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ReservationForm(),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(vertical: 15),
+                          minimumSize: Size(double.infinity, 0),
+                        ),
+                        child: Text('Pinjam Ruangan'),
                       ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 15),
-                    minimumSize: Size(double.infinity, 0),
-                  ),
-                  child: Text('Pinjam Ruangan'),
-                ),
-              ],
-            );
-          }
+                    ),
+                  ],
+                );
+              }
+            },
+          );
         },
       ),
       bottomNavigationBar: MyBottomNavigationBar(

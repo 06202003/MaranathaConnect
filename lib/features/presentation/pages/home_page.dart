@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_firebase/features/domain/repositories/task_repository.dart';
+import 'package:flutter_firebase/features/presentation/widgets/app_navigation.dart';
 import 'package:flutter_firebase/features/presentation/widgets/organizational_tasks_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_firebase/features/domain/entities/task_entity.dart';
@@ -20,6 +21,8 @@ final getTasksUsecaseProvider = FutureProvider<List<TaskEntity>>((ref) async {
 });
 
 class HomePage extends ConsumerWidget {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   void _navigateToPage(BuildContext context, int index) {
     // Handle navigation here if needed
     switch (index) {
@@ -47,9 +50,21 @@ class HomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text("Welcome Home!"),
+        title: const Text("Room Reservation"),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () {
+              _scaffoldKey.currentState!.openEndDrawer();
+            },
+          ),
+        ],
+      ),
+      endDrawer: Drawer(
+        child: AppNavigation(),
       ),
       body: Column(
         children: [

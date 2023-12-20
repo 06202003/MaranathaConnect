@@ -6,10 +6,10 @@ import 'package:flutter_firebase/features/presentation/widgets/form_container_wi
 import 'package:flutter_firebase/global/common/toast.dart';
 
 class SignUpPage extends StatefulWidget {
-  const SignUpPage({super.key});
+  const SignUpPage({Key? key}) : super(key: key);
 
   @override
-  State<SignUpPage> createState() => _SignUpPageState();
+  _SignUpPageState createState() => _SignUpPageState();
 }
 
 class _SignUpPageState extends State<SignUpPage> {
@@ -18,6 +18,9 @@ class _SignUpPageState extends State<SignUpPage> {
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+  TextEditingController _imgUrlController = TextEditingController();
+  TextEditingController _organizationController = TextEditingController();
+  TextEditingController _numberController = TextEditingController();
 
   bool isSigningUp = false;
 
@@ -26,6 +29,9 @@ class _SignUpPageState extends State<SignUpPage> {
     _usernameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _imgUrlController.dispose();
+    _organizationController.dispose();
+    _numberController.dispose();
     super.dispose();
   }
 
@@ -77,6 +83,30 @@ class _SignUpPageState extends State<SignUpPage> {
                     isPasswordField: true,
                   ),
                   SizedBox(
+                    height: 10,
+                  ),
+                  FormContainerWidget(
+                    controller: _imgUrlController,
+                    hintText: "Image URL",
+                    isPasswordField: false,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  FormContainerWidget(
+                    controller: _organizationController,
+                    hintText: "Organization",
+                    isPasswordField: false,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  FormContainerWidget(
+                    controller: _numberController,
+                    hintText: "Number",
+                    isPasswordField: false,
+                  ),
+                  SizedBox(
                     height: 30,
                   ),
                   GestureDetector(
@@ -91,16 +121,18 @@ class _SignUpPageState extends State<SignUpPage> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Center(
-                          child: isSigningUp
-                              ? CircularProgressIndicator(
+                        child: isSigningUp
+                            ? CircularProgressIndicator(
+                                color: Colors.white,
+                              )
+                            : Text(
+                                "Sign Up",
+                                style: TextStyle(
                                   color: Colors.white,
-                                )
-                              : Text(
-                                  "Sign Up",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold),
-                                )),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                      ),
                     ),
                   ),
                   SizedBox(
@@ -114,19 +146,23 @@ class _SignUpPageState extends State<SignUpPage> {
                         width: 5,
                       ),
                       GestureDetector(
-                          onTap: () {
-                            Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => LoginPage()),
-                                (route) => false);
-                          },
-                          child: Text(
-                            "Login",
-                            style: TextStyle(
-                                color: Colors.blue,
-                                fontWeight: FontWeight.bold),
-                          ))
+                        onTap: () {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => LoginPage(),
+                            ),
+                            (route) => false,
+                          );
+                        },
+                        child: Text(
+                          "Login",
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      )
                     ],
                   )
                 ],
@@ -146,17 +182,28 @@ class _SignUpPageState extends State<SignUpPage> {
     String username = _usernameController.text;
     String email = _emailController.text;
     String password = _passwordController.text;
+    String imgUrl = _imgUrlController.text;
+    String organization = _organizationController.text;
+    String number = _numberController.text;
 
-    User? user = await _auth.signUpWithEmailAndPassword(username,email, password);
+    User? user = await _auth.signUpWithEmailAndPassword(
+      username,
+      email,
+      password,
+      imgUrl,
+      organization,
+      number,
+    );
 
     setState(() {
       isSigningUp = false;
     });
+
     if (user != null) {
       showToast(message: "User is successfully created");
       Navigator.pushNamed(context, "/home");
     } else {
-      showToast(message: "Some error happend");
+      showToast(message: "Some error happened");
     }
   }
 }

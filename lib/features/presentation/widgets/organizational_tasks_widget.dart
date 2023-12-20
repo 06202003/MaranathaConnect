@@ -1,12 +1,11 @@
 // organizational_tasks_widget.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter_firebase/features/data/models/task_model.dart';
-import 'package:flutter_firebase/features/domain/repositories/task_repository.dart';
-import 'package:flutter_firebase/features/presentation/widgets/error_retry.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_firebase/features/domain/entities/task_entity.dart';
 import 'package:flutter_firebase/features/domain/usecases/get_tasks_usecase.dart';
+import 'package:flutter_firebase/features/domain/repositories/task_repository.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_firebase/features/presentation/widgets/error_retry.dart';
 import 'package:flutter_firebase/features/presentation/widgets/task_list_tile.dart';
 
 final getTasksUsecaseProvider = FutureProvider<List<TaskEntity>>((ref) async {
@@ -41,12 +40,6 @@ class OrganizationalTasksWidget extends ConsumerWidget {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                ElevatedButton(
-                  onPressed: () {
-                    _showAddDialog(context, ref);
-                  },
-                  child: Text('Tambah Program Kerja'),
-                ),
                 for (int index = 0; index < taskEntities.length; index++)
                   Column(
                     children: [
@@ -54,6 +47,19 @@ class OrganizationalTasksWidget extends ConsumerWidget {
                       if (index < taskEntities.length - 1) Divider(),
                     ],
                   ),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _showAddDialog(context, ref);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(vertical: 15),
+                      minimumSize: Size(double.infinity, 0),
+                    ),
+                    child: Text('Tambah Program Kerja'),
+                  ),
+                ),
               ],
             ),
           ),
@@ -75,6 +81,7 @@ class OrganizationalTasksWidget extends ConsumerWidget {
     TextEditingController titleController = TextEditingController();
     TextEditingController descriptionController = TextEditingController();
     TextEditingController imageUrlController = TextEditingController();
+    DateTime _selectedDate = DateTime.now();
 
     showDialog(
       context: context,
@@ -96,6 +103,28 @@ class OrganizationalTasksWidget extends ConsumerWidget {
                   controller: imageUrlController,
                   decoration: InputDecoration(labelText: 'Image URL'),
                 ),
+                Row(
+                  children: [
+                    Text("Tanggal Pelaksanaan"),
+                    IconButton(
+                      icon: Icon(Icons.calendar_today),
+                      onPressed: () async {
+                        DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: _selectedDate,
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime.now().add(Duration(days: 365)),
+                        );
+                        if (pickedDate != null && pickedDate != _selectedDate) {
+                          _selectedDate = pickedDate;
+                        }
+                      },
+                    ),
+                    Text(
+                      "${_selectedDate.toLocal().day}/${_selectedDate.toLocal().month}/${_selectedDate.toLocal().year}",
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -108,8 +137,14 @@ class OrganizationalTasksWidget extends ConsumerWidget {
             ),
             TextButton(
               onPressed: () {
-                _addTask(context, ref, titleController.text,
-                    descriptionController.text, imageUrlController.text);
+                _addTask(
+                  context,
+                  ref,
+                  titleController.text,
+                  descriptionController.text,
+                  imageUrlController.text,
+                  "${_selectedDate.toLocal().day}/${_selectedDate.toLocal().month}/${_selectedDate.toLocal().year}",
+                );
                 Navigator.of(context).pop();
               },
               child: Text("Add"),
@@ -120,8 +155,14 @@ class OrganizationalTasksWidget extends ConsumerWidget {
     );
   }
 
-  void _addTask(BuildContext context, WidgetRef ref, String title,
-      String description, String imageUrl) {
+  void _addTask(
+    BuildContext context,
+    WidgetRef ref,
+    String title,
+    String description,
+    String imageUrl,
+    String date,
+  ) {
     try {
       // Get a reference to the Firestore collection
       CollectionReference tasksCollection =
@@ -132,11 +173,10 @@ class OrganizationalTasksWidget extends ConsumerWidget {
         'title': title,
         'description': description,
         'imageUrl': imageUrl,
-        'date': DateTime.now().toString(),
+        'date': date,
       }).then((DocumentReference document) {
         print('Task added with ID: ${document.id}');
-        ref.refresh(
-            getTasksUsecaseProvider); // Refresh setelah berhasil menambahkan data
+        ref.refresh(getTasksUsecaseProvider);
       }).catchError((error) {
         print('Error adding task: $error');
         // Handle error

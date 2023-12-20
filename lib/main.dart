@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       navigatorKey: _navigationService.navigatorKey,
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Firebase',
+      title: 'MaranathaConnect',
       theme: appTheme,
       routes: {
         '/': (context) => SplashScreen(

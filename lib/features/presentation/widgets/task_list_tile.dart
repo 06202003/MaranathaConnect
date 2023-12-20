@@ -1,10 +1,7 @@
 // task_list_tile.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_firebase/features/data/datasources/task_remote_datasource.dart';
 import 'package:flutter_firebase/features/domain/entities/task_entity.dart';
-import 'package:flutter_firebase/features/data/models/task_model.dart';
-import 'package:flutter_firebase/features/domain/usecases/get_tasks_usecase.dart';
 
 class TaskListTile extends StatelessWidget {
   final TaskEntity task;
@@ -17,7 +14,7 @@ class TaskListTile extends StatelessWidget {
       leading: CircleAvatar(
         backgroundImage: NetworkImage(task.imageUrl),
       ),
-      title: Text(task.title),
+      title: Text(task.title), // Displaying the ID for debugging purposes
       subtitle: Text(
         task.date ?? 'No date available',
         maxLines: 2,
@@ -41,13 +38,7 @@ class TaskListTile extends StatelessWidget {
         ],
       ),
       onTap: () {
-        _showDescriptionModal(
-          context,
-          task.id ?? "No id available",
-          task.title ?? "No Title available",
-          task.description ?? 'No description available',
-          task.imageUrl ?? "No Image available",
-        );
+        _showDescriptionModal(context, task);
       },
     );
   }
@@ -139,74 +130,60 @@ class TaskListTile extends StatelessWidget {
   }
 
   void _deleteTask(BuildContext context, TaskEntity task) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Confirm Delete'),
-          content: Text('Are you sure you want to delete this task?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text("Cancel"),
-            ),
-            TextButton(
-              onPressed: () {
-                _performDelete(context, task);
-                Navigator.of(context).pop();
-              },
-              child: Text("Delete"),
-            ),
-          ],
-        );
-      },
-    );
+    try {
+      if (task.id != null && task.id.isNotEmpty) {
+        CollectionReference tasksCollection =
+            FirebaseFirestore.instance.collection('tasks');
+        DocumentReference documentReference = tasksCollection.doc(task.id);
+        documentReference.delete().then((_) {
+          print('Task deleted with ID: ${task.id}');
+        }).catchError((error) {
+          print('Error deleting task: $error');
+        });
+      } else {
+        print('Error deleting task: Invalid task ID');
+      }
+    } catch (e) {
+      print('Error deleting task: $e');
+    }
   }
 
-  void _showDescriptionModal(BuildContext context, String id, String title,
-      String description, String imageUrl) {
+  void _showDescriptionModal(BuildContext context, TaskEntity task) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(id),
+          title: Text(task.title ?? "No Title available"),
           content: Container(
             width: MediaQuery.of(context).size.width * 0.7,
-            height: MediaQuery.of(context).size.height *
-                0.6, // Sesuaikan tinggi sesuai kebutuhan
+            height: MediaQuery.of(context).size.height * 0.6,
             child: Column(
               children: [
-                // Tambahkan gambar dengan sudut bulat dan rasio aspek 16:9
                 ClipRRect(
                   borderRadius: BorderRadius.circular(15.0),
                   child: AspectRatio(
                     aspectRatio: 16 / 9,
                     child: Image(
-                      image: NetworkImage(imageUrl),
+                      image: NetworkImage(task.imageUrl ?? ""),
                       fit: BoxFit.cover,
                     ),
                   ),
                 ),
                 SizedBox(height: 10),
-                // Tambahkan ruang di antara gambar dan deskripsi
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    description,
+                    task.description ?? 'No description available',
                     textAlign: TextAlign.justify,
                   ),
                 ),
               ],
             ),
           ),
-          contentPadding:
-              EdgeInsets.all(10.0), // Sesuaikan padding sesuai kebutuhan
+          contentPadding: EdgeInsets.all(10.0),
           actions: <Widget>[
             TextButton(
               onPressed: () {
-                // Tutup dialog
                 Navigator.of(context).pop();
               },
               child: Text("Tutup"),
@@ -220,15 +197,10 @@ class TaskListTile extends StatelessWidget {
   void _updateTask(BuildContext context, TaskEntity task, String title,
       String description, String imageUrl) {
     try {
-      if (task.id.isNotEmpty) {
-        // Get a reference to the Firestore collection
+      if (task.id != null && task.id.isNotEmpty) {
         CollectionReference tasksCollection =
             FirebaseFirestore.instance.collection('tasks');
-
-        // Get a reference to the specific document using its ID
         DocumentReference documentReference = tasksCollection.doc(task.id);
-
-        // Update the document
         documentReference.update({
           'title': title,
           'description': description,
@@ -238,37 +210,27 @@ class TaskListTile extends StatelessWidget {
           print('Task updated with ID: ${task.id}');
         }).catchError((error) {
           print('Error updating task: $error');
-          // Handle error
         });
       } else {
         print('Error updating task: Invalid task ID');
       }
     } catch (e) {
       print('Error updating task: $e');
-      // Handle the error as needed
     }
   }
 
   void _performDelete(BuildContext context, TaskEntity task) {
     try {
-      // Get a reference to the Firestore collection
       CollectionReference tasksCollection =
           FirebaseFirestore.instance.collection('tasks');
-
-      // Get a reference to the specific document using its ID
-      DocumentReference documentReference =
-          tasksCollection.doc(task.id.toString());
-
-      // Delete the document
+      DocumentReference documentReference = tasksCollection.doc(task.id);
       documentReference.delete().then((_) {
         print('Task deleted with ID: ${task.id}');
       }).catchError((error) {
         print('Error deleting task: $error');
-        // Handle error
       });
     } catch (e) {
       print('Error deleting task: $e');
-      // Handle the error as needed
     }
   }
 }

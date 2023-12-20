@@ -6,19 +6,14 @@ class RemoteDataSource {
 
   Future<List<TaskModel>> getTasks() async {
     try {
-      // Replace this with the actual path to your Firestore collection
-      // For example, if your collection is named 'tasks', use 'tasks'
       CollectionReference tasksCollection = _firestore.collection('tasks');
-
-      // Fetch data from Firestore
       QuerySnapshot<Object?> querySnapshot = await tasksCollection.get();
 
-      // Process the data and convert it into TaskModel objects
       List<TaskModel> tasks = querySnapshot.docs.map((doc) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
         return TaskModel(
-          id: data['id'] ?? '',
+          id: doc.id, // Use document ID as the ID
           title: data['title'] ?? '',
           imageUrl: data['imageUrl'] ?? '',
           description: data['description'] ?? '',
@@ -28,7 +23,6 @@ class RemoteDataSource {
 
       return tasks;
     } catch (e) {
-      // Handle errors appropriately
       print('Error fetching tasks from Firestore: $e');
       throw Exception('Failed to fetch tasks from Firestore: $e');
     }

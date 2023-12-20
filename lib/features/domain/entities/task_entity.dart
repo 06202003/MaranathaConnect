@@ -5,13 +5,14 @@ class TaskEntity {
   final String description;
   final String date;
 
-  TaskEntity(
-      {required this.id,
-      required this.title,
-      required this.imageUrl,
-      required this.description,
-      required this.date});
-
+  TaskEntity({
+    required this.id,
+    required this.title,
+    required this.imageUrl,
+    required this.description,
+    required this.date,
+  });
+  
   factory TaskEntity.fromFirestoreData(Map<String, dynamic> data) {
     return TaskEntity(
       id: data['id'] ?? '',

@@ -22,17 +22,23 @@ class TaskRepositoryImpl implements TaskRepository {
 
   @override
   Future<List<TaskEntity>> getTasks() async {
-    final List<TaskModel> taskModels = await remoteDataSource.getTasks();
-    return taskModels
-        .map(
-          (model) => TaskEntity(
-            id: model.id,
-            title: model.title,
-            imageUrl: model.imageUrl,
-            description: model.description,
-            date: model.date,
-          ),
-        )
-        .toList();
+    try {
+      final List<TaskModel> taskModels = await remoteDataSource.getTasks();
+
+      return taskModels
+          .map(
+            (model) => TaskEntity(
+              id: model.id,
+              title: model.title,
+              imageUrl: model.imageUrl,
+              description: model.description,
+              date: model.date,
+            ),
+          )
+          .toList();
+    } catch (e) {
+      print('Error fetching tasks: $e');
+      throw Exception('Failed to fetch tasks: $e');
+    }
   }
 }

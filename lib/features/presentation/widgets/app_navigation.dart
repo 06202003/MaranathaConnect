@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_firebase/features/service/firebase_auth_implementation/firebase_auth_services.dart';
 
-// import 'package:flutter_firebase/features/presentation/pages/home_page.dart';
-// import 'package:flutter_firebase/features/presentation/pages/room_page.dart';
-// import 'package:flutter_firebase/features/presentation/pages/chat_page.dart';
-
 class AppNavigation extends StatefulWidget {
   const AppNavigation({Key? key}) : super(key: key);
 
@@ -111,11 +107,26 @@ class NavigationTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    // Create a TextPainter and set its properties
+    final textPainter = TextPainter(
+      text: TextSpan(text: label, style: textTheme.subtitle1),
+      textDirection: TextDirection.ltr,
+    );
+
+    // Layout the text
+    textPainter.layout();
+
+    // Calculate the height of the container based on text height
+    final containerHeight = textPainter.height + 60.0; // Add extra padding
+
     return InkWell(
       onTap: onTap,
       child: Container(
+        height: containerHeight,
         decoration: BoxDecoration(
-          color: Colors.blue, // Background color
+          border: Border.all(width: 1.0, color: Color.fromARGB(255, 0, 0, 0)),
           borderRadius: BorderRadius.circular(16), // Border radius
         ),
         child: ListTile(
@@ -134,8 +145,8 @@ class NavigationTile extends StatelessWidget {
             ],
           ),
           leading: Container(
-            width: 30, 
-             padding: EdgeInsets.fromLTRB(4, 2, 0, 2),
+            width: 30,
+            padding: EdgeInsets.fromLTRB(4, 2, 0, 2),
             child: Center(
               child: Icon(
                 icon,
