@@ -87,7 +87,7 @@ class OrganizationalTasksWidget extends ConsumerWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Add New Task'),
+          title: Text('Tambah Program Kerja'),
           content: SingleChildScrollView(
             child: Column(
               children: [

@@ -53,7 +53,7 @@ class HomePage extends ConsumerWidget {
       key: _scaffoldKey,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text("Room Reservation"),
+        title: const Text("Welcome Home!"),
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.menu),

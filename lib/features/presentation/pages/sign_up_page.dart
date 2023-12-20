@@ -59,14 +59,6 @@ class _SignUpPageState extends State<SignUpPage> {
                     style: TextStyle(fontSize: 27, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
-                    height: 30,
-                  ),
-                  FormContainerWidget(
-                    controller: _usernameController,
-                    hintText: "Username",
-                    isPasswordField: false,
-                  ),
-                  SizedBox(
                     height: 10,
                   ),
                   FormContainerWidget(
@@ -81,6 +73,14 @@ class _SignUpPageState extends State<SignUpPage> {
                     controller: _passwordController,
                     hintText: "Password",
                     isPasswordField: true,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  FormContainerWidget(
+                    controller: _usernameController,
+                    hintText: "Fullname",
+                    isPasswordField: false,
                   ),
                   SizedBox(
                     height: 10,

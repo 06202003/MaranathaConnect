@@ -48,9 +48,6 @@ class _LoginPageState extends State<LoginPage> {
                     "WELCOME",
                     style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
                   Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15),

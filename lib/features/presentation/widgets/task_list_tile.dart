@@ -24,13 +24,19 @@ class TaskListTile extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           IconButton(
-            icon: Icon(Icons.edit),
+            icon: Icon(
+              Icons.edit,
+              color: Colors.blue,
+            ),
             onPressed: () {
               _showUpdateDialog(context, task);
             },
           ),
           IconButton(
-            icon: Icon(Icons.delete),
+            icon: Icon(
+              Icons.delete,
+              color: Colors.red,
+            ),
             onPressed: () {
               _confirmDelete(context, task);
             },
@@ -47,6 +53,7 @@ class TaskListTile extends StatelessWidget {
     TextEditingController titleController = TextEditingController();
     TextEditingController descriptionController = TextEditingController();
     TextEditingController imageUrlController = TextEditingController();
+    DateTime _selectedDate = DateTime.now();
 
     // Set initial values in the text fields
     titleController.text = task.title ?? '';
@@ -73,6 +80,28 @@ class TaskListTile extends StatelessWidget {
                   controller: imageUrlController,
                   decoration: InputDecoration(labelText: 'Image URL'),
                 ),
+                Row(
+                  children: [
+                    Text("Tanggal Pelaksanaan"),
+                    IconButton(
+                      icon: Icon(Icons.calendar_today),
+                      onPressed: () async {
+                        DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: _selectedDate,
+                          firstDate: DateTime.now(),
+                          lastDate: DateTime.now().add(Duration(days: 365)),
+                        );
+                        if (pickedDate != null && pickedDate != _selectedDate) {
+                          _selectedDate = pickedDate;
+                        }
+                      },
+                    ),
+                    Text(
+                      "${_selectedDate.toLocal().day}/${_selectedDate.toLocal().month}/${_selectedDate.toLocal().year}",
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -91,6 +120,7 @@ class TaskListTile extends StatelessWidget {
                   titleController.text,
                   descriptionController.text,
                   imageUrlController.text,
+                  "${_selectedDate.toLocal().day}/${_selectedDate.toLocal().month}/${_selectedDate.toLocal().year}",
                 );
                 Navigator.of(context).pop();
               },
@@ -194,8 +224,14 @@ class TaskListTile extends StatelessWidget {
     );
   }
 
-  void _updateTask(BuildContext context, TaskEntity task, String title,
-      String description, String imageUrl) {
+  void _updateTask(
+    BuildContext context,
+    TaskEntity task,
+    String title,
+    String description,
+    String imageUrl,
+    String date,
+  ) {
     try {
       if (task.id != null && task.id.isNotEmpty) {
         CollectionReference tasksCollection =
@@ -205,7 +241,7 @@ class TaskListTile extends StatelessWidget {
           'title': title,
           'description': description,
           'imageUrl': imageUrl,
-          'date': DateTime.now().toString(),
+          'date': date,
         }).then((_) {
           print('Task updated with ID: ${task.id}');
         }).catchError((error) {
