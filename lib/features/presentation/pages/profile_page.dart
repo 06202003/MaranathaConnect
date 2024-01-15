@@ -5,6 +5,7 @@ import 'package:flutter_firebase/features/presentation/widgets/app_navigation.da
 import 'package:flutter_firebase/features/presentation/widgets/bottom_navigation.dart';
 import 'package:flutter_firebase/features/service/firebase_auth_implementation/firebase_auth_services.dart';
 import 'package:flutter_firebase/features/service/firestore_service/firestore_auth_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfilePage extends StatefulWidget {
   final NavigationService navigationService;
@@ -307,6 +308,34 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
                           ),
+                          SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              _buildSocialMediaIcon(
+                                imagePath: 'assets/instagram.jpeg',
+                                onPressed: () {
+                                  _launchURL(
+                                      'https://www.instagram.com/yz.jsx/');
+                                },
+                              ),
+                              SizedBox(width: 20),
+                              _buildSocialMediaIcon(
+                                imagePath: 'assets/twitter.png',
+                                onPressed: () {
+                                  _launchURL('https://twitter.com/NdutzYz');
+                                },
+                              ),
+                              SizedBox(width: 20),
+                              _buildSocialMediaIcon(
+                                imagePath:
+                                    'assets/wa.png', // Assuming you have an image asset for WhatsApp
+                                onPressed: () {
+                                  _launchWhatsApp();
+                                },
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
@@ -328,5 +357,37 @@ class _ProfilePageState extends State<ProfilePage> {
         },
       ),
     );
+  }
+}
+
+Widget _buildSocialMediaIcon(
+    {required String imagePath, required VoidCallback onPressed}) {
+  return GestureDetector(
+    onTap: onPressed,
+    child: CircleAvatar(
+      radius: 20,
+      backgroundColor: Colors.blue[100],
+      child: Image.asset(imagePath, width: 100, height: 100),
+    ),
+  );
+}
+
+// Function to launch URLs
+void _launchURL(String url) async {
+  if (await canLaunch(url)) {
+    await launch(url);
+  } else {
+    print('Could not launch $url');
+  }
+}
+
+// Function to launch WhatsApp
+void _launchWhatsApp() async {
+  String whatsappUrl =
+      "whatsapp://send?phone=6289507647137"; // Replace PHONE_NUMBER with the actual phone number
+  if (await canLaunch(whatsappUrl)) {
+    await launch(whatsappUrl);
+  } else {
+    print('Could not launch WhatsApp');
   }
 }

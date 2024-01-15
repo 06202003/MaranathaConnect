@@ -82,6 +82,9 @@ flutter:
     - assets/1.png
     - assets/2.png
     - assets/3.png
+    - assets/wa.png
+    - assets/twitter.png
+    - assets/instagram.jpeg
     - assets/pdf/GDG_Bandung_Proposal_DevFest2023.pdf
     - assets/pdf/Proposal_INTEGER_2022.pdf
   # An image asset can refer to one or more resolution-specific "variants", see

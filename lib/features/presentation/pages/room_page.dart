@@ -11,6 +11,7 @@ import 'package:flutter_firebase/features/presentation/widgets/potential_ruangan
 import 'package:flutter_firebase/features/presentation/widgets/rekomendasi_ruangan.dart';
 import 'package:flutter_firebase/features/presentation/widgets/reservasi_ruangan.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart'; // Add this line to import the URL launcher package
 
 class PinjamRuanganPage extends StatefulWidget {
   final NavigationService navigationService;
