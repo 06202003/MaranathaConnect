@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_firebase/features/domain/usecases/pdf_usecase.dart';
 import 'package:flutter_firebase/features/presentation/routes/navigation_service.dart';
 import 'package:flutter_firebase/features/presentation/widgets/bottom_navigation.dart';
+import 'package:flutter_firebase/features/presentation/widgets/pdf_list_screen.dart';
+import 'package:flutter_firebase/features/presentation/widgets/pdf_upload_screen.dart';
 
-class ChatPage extends StatefulWidget {
+class PdfPage extends StatefulWidget {
   final NavigationService navigationService;
+  final PdfUseCase pdfUseCase;
 
-  ChatPage({required this.navigationService});
+  PdfPage({required this.navigationService, required this.pdfUseCase});
 
   @override
-  _ChatPageState createState() => _ChatPageState();
+  _PdfPageState createState() => _PdfPageState();
 }
 
-class _ChatPageState extends State<ChatPage> {
-  int _currentIndex = 2; // Set the index for the chat page.
+class _PdfPageState extends State<PdfPage> {
+  int _currentIndex = 2;
 
   void navigateToPage(int index) {
     switch (index) {
@@ -20,10 +24,7 @@ class _ChatPageState extends State<ChatPage> {
         widget.navigationService.navigateToPage('/home');
         break;
       case 1:
-        widget.navigationService.navigateToPage('/room');
-        break;
-      case 2:
-        // This is the current page, you might not need to navigate anywhere.
+        widget.navigationService.navigateToPage('/room'); // Corrected path
         break;
       case 3:
         widget.navigationService.navigateToPage('/profile');
@@ -34,12 +35,9 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Chat'),
-      ),
-      body: Center(
-        child: Text('This is the Chat Page'),
-      ),
+      body: _currentIndex == 0
+          ? PdfUploadScreen(pdfUseCase: widget.pdfUseCase)
+          : PdfListScreen(pdfUseCase: widget.pdfUseCase),
       bottomNavigationBar: MyBottomNavigationBar(
         navigationService: widget.navigationService,
         currentIndex: _currentIndex,

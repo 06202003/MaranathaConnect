@@ -101,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
                       width: double.infinity,
                       height: 45,
                       decoration: BoxDecoration(
-                        color: Colors.blue,
+                        color: Colors.orange,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Center(
@@ -114,6 +114,7 @@ class _LoginPageState extends State<LoginPage> {
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
+                                  fontSize: 16,
                                 ),
                               ),
                       ),

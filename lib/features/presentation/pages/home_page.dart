@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_firebase/features/domain/repositories/task_repository.dart';
 import 'package:flutter_firebase/features/presentation/widgets/app_navigation.dart';
 import 'package:flutter_firebase/features/presentation/widgets/organizational_tasks_widget.dart';
+import 'package:flutter_firebase/features/presentation/widgets/senate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_firebase/features/domain/entities/task_entity.dart';
 import 'package:flutter_firebase/features/domain/usecases/get_tasks_usecase.dart';
@@ -33,7 +34,7 @@ class HomePage extends ConsumerWidget {
         navigationService.navigateToPage('/room');
         break;
       case 2:
-        navigationService.navigateToPage('/chat');
+        navigationService.navigateToPage('/doc');
         break;
       case 3:
         navigationService.navigateToPage('/profile');
@@ -54,18 +55,18 @@ class HomePage extends ConsumerWidget {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text("Welcome Home!"),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: () {
-              _scaffoldKey.currentState!.openEndDrawer();
-            },
-          ),
-        ],
+        // actions: <Widget>[
+        //   IconButton(
+        //     icon: const Icon(Icons.menu),
+        //     onPressed: () {
+        //       _scaffoldKey.currentState!.openEndDrawer();
+        //     },
+        //   ),
+        // ],
       ),
-      endDrawer: Drawer(
-        child: AppNavigation(),
-      ),
+      // endDrawer: Drawer(
+      //   child: AppNavigation(),
+      // ),
       body: Column(
         children: [
           Container(
@@ -82,7 +83,7 @@ class HomePage extends ConsumerWidget {
               ),
             ),
           ),
-          SizedBox(height: 16.0),
+          SizedBox(height: 24.0),
           CarouselSlider(
             items: [
               // Replace the containers with images wrapped in a ClipRRect for rounded corners
@@ -107,12 +108,15 @@ class HomePage extends ConsumerWidget {
               autoPlayCurve: Curves.fastOutSlowIn,
               enableInfiniteScroll: true,
               autoPlayAnimationDuration: Duration(milliseconds: 800),
-              viewportFraction: 0.8,
+              viewportFraction: 0.7,
             ),
           ),
           SizedBox(height: 16.0),
           // Add the OrganizationalTasksWidget below the carousel
           OrganizationalTasksWidget(),
+          Expanded(
+            child: SenatNeedsListWidget(),
+          ),
         ],
       ),
       bottomNavigationBar: MyBottomNavigationBar(

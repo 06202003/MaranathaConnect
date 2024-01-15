@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_firebase/features/data/datasources/ruangan_remote_datasource.dart';
+import 'package:flutter_firebase/features/data/models/ruangan_model.dart';
 
 class ReservationForm extends StatefulWidget {
   @override
@@ -10,6 +12,9 @@ class _ReservationFormState extends State<ReservationForm> {
   TextEditingController _ruanganController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
   TimeOfDay _selectedTime = TimeOfDay.now();
+
+  // Dummy data source
+  final RuanganDatasource _ruanganDatasource = RuanganDatasource();
 
   @override
   Widget build(BuildContext context) {
@@ -24,14 +29,38 @@ class _ReservationFormState extends State<ReservationForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextFormField(
-                controller: _ruanganController,
-                decoration: InputDecoration(labelText: 'Nama Ruangan'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Nama Ruangan is required';
+              FutureBuilder<List<RuanganModel>>(
+                future: _ruanganDatasource.getRuanganData(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return CircularProgressIndicator();
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    // Display a dropdown with room names from the data source
+                    List<RuanganModel> ruanganData = snapshot.data!;
+                    return DropdownButtonFormField<RuanganModel>(
+                      value: ruanganData.isNotEmpty ? ruanganData[0] : null,
+                      onChanged: (RuanganModel? selectedRuangan) {
+                        setState(() {
+                          _ruanganController.text = selectedRuangan?.nama ?? '';
+                        });
+                      },
+                      items: ruanganData.map((ruangan) {
+                        return DropdownMenuItem<RuanganModel>(
+                          value: ruangan,
+                          child: Text(ruangan.nama),
+                        );
+                      }).toList(),
+                      decoration: InputDecoration(labelText: 'Nama Ruangan'),
+                      validator: (value) {
+                        if (value == null) {
+                          return 'Nama Ruangan is required';
+                        }
+                        return null;
+                      },
+                    );
                   }
-                  return null;
                 },
               ),
               SizedBox(height: 16),
@@ -82,6 +111,10 @@ class _ReservationFormState extends State<ReservationForm> {
               ),
               SizedBox(height: 16),
               ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all(Colors.orange),
+                  padding: MaterialStateProperty.all(EdgeInsets.all(16)),
+                ),
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     // Add logic to submit reservation
@@ -92,11 +125,14 @@ class _ReservationFormState extends State<ReservationForm> {
                     // After submitting, you may want to navigate back or show a success message
                   }
                 },
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 15),
-                  minimumSize: Size(double.infinity, 0),
+                child: Text(
+                  'Submit Reservation',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                child: Text('Submit Reservation'),
               )
             ],
           ),

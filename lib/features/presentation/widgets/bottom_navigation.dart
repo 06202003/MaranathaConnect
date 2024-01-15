@@ -41,8 +41,8 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
           label: 'Room',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.chat),
-          label: 'Chat',
+          icon: Icon(Icons.file_copy),
+          label: 'Doc',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.person),
@@ -69,7 +69,7 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
         widget.navigationService.navigateToPage('/room');
         break;
       case 2:
-        widget.navigationService.navigateToPage('/chat');
+        widget.navigationService.navigateToPage('/doc');
         break;
       case 3:
         widget.navigationService.navigateToPage('/profile');

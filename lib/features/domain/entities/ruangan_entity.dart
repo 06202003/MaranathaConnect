@@ -10,6 +10,10 @@ class RuanganEntity {
   final DateTime initialOrderTime;
   final DateTime endTimeOrder;
 
+  DateTime reservationDate;
+  DateTime reservationStartTime;
+  DateTime reservationEndTime;
+
   RuanganEntity({
     required this.id,
     required this.nama,
@@ -18,7 +22,9 @@ class RuanganEntity {
     required this.date,
     required this.initialOrderTime,
     required this.endTimeOrder,
-  });
+  })  : reservationDate = DateTime.now(),
+        reservationStartTime = DateTime.now(),
+        reservationEndTime = DateTime.now().add(Duration(hours: 2));
 
   // Konversi dari model ke entity
   factory RuanganEntity.fromModel(RuanganModel model) {

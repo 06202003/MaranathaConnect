@@ -38,29 +38,54 @@ class OrganizationalTasksWidget extends ConsumerWidget {
             await ref.refresh(getTasksUsecaseProvider);
           },
           child: SingleChildScrollView(
-            child: Column(
-              children: [
-                for (int index = 0; index < taskEntities.length; index++)
-                  Column(
-                    children: [
-                      TaskListTile(taskEntities[index]),
-                      if (index < taskEntities.length - 1) Divider(),
-                    ],
-                  ),
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      _showAddDialog(context, ref);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(vertical: 15),
-                      minimumSize: Size(double.infinity, 0),
+            child: Container(
+              padding: EdgeInsets.all(16.0),
+              color: Color.fromARGB(255, 235, 247,
+                  255), // Set the background color for the entire column
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Program Senat Mahasiswa",
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
                     ),
-                    child: Text('Tambah Program Kerja'),
                   ),
-                ),
-              ],
+                  for (int index = 0; index < taskEntities.length; index++)
+                    Column(
+                      children: [
+                        Container(
+                          // You can set individual item background color here if needed
+                          child: TaskListTile(taskEntities[index]),
+                        ),
+                        // if (index < taskEntities.length - 1) Divider(),
+                      ],
+                    ),
+                  Container(
+                    width: double.infinity,
+                    margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.orange),
+                        padding: MaterialStateProperty.all(EdgeInsets.all(16)),
+                      ),
+                      onPressed: () {
+                        _showAddDialog(context, ref);
+                      },
+                      child: Text(
+                        'Tambah Program Kerja',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         );

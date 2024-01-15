@@ -1,6 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_firebase/features/data/datasources/pdf_datasources.dart';
+import 'package:flutter_firebase/features/data/repositories/pdf_repository_impl.dart';
+import 'package:flutter_firebase/features/domain/repositories/pdf_repository.dart';
+import 'package:flutter_firebase/features/domain/usecases/pdf_usecase.dart';
+import 'package:flutter_firebase/features/presentation/pages/pdf_page.dart';
 import 'package:flutter_firebase/features/presentation/pages/profile_page.dart';
 import 'package:flutter_firebase/features/presentation/themes/app_theme.dart';
 import 'package:flutter_firebase/features/app/splash_screen/splash_screen.dart';
@@ -8,7 +13,6 @@ import 'package:flutter_firebase/features/presentation/pages/home_page.dart';
 import 'package:flutter_firebase/features/presentation/pages/login_page.dart';
 import 'package:flutter_firebase/features/presentation/pages/sign_up_page.dart';
 import 'package:flutter_firebase/features/presentation/pages/room_page.dart';
-import 'package:flutter_firebase/features/presentation/pages/chat_page.dart';
 import 'package:flutter_firebase/features/presentation/routes/navigation_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -26,16 +30,23 @@ Future main() async {
   } else {
     await Firebase.initializeApp();
   }
+  
+  final PdfDataSource pdfDataSource = PdfDataSource();
+  final PdfRepository pdfRepository = PdfRepositoryImpl(pdfDataSource);
+  final PdfUseCase pdfUseCase = PdfUseCase(pdfRepository);
   runApp(
     ProviderScope(
-      child: MyApp(),
+      child: MyApp(pdfUseCase: pdfUseCase),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
   final NavigationService _navigationService = NavigationService();
-  @override
+  final PdfUseCase pdfUseCase;
+
+  MyApp({required this.pdfUseCase});
+    @override
   Widget build(BuildContext context) {
     return MaterialApp(
       navigatorKey: _navigationService.navigatorKey,
@@ -44,17 +55,20 @@ class MyApp extends StatelessWidget {
       theme: appTheme,
       routes: {
         '/': (context) => SplashScreen(
-              child: LoginPage(),
-            ),
+          child: LoginPage(),
+        ),
         '/login': (context) => LoginPage(),
         '/signUp': (context) => SignUpPage(),
         '/home': (context) => HomePage(navigationService: _navigationService),
-        '/room': (context) =>
-            PinjamRuanganPage(navigationService: _navigationService),
-        '/chat': (context) => ChatPage(navigationService: _navigationService),
-        '/profile': (context) =>
-            ProfilePage(navigationService: _navigationService),
+        '/room': (context) => PinjamRuanganPage(navigationService: _navigationService),
+        '/doc': (context) => PdfPage(
+          navigationService: _navigationService,
+          pdfUseCase: pdfUseCase,
+        ),
+        '/profile': (context) => ProfilePage(navigationService: _navigationService),
       },
     );
   }
 }
+
+

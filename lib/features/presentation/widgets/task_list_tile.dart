@@ -10,42 +10,64 @@ class TaskListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: CircleAvatar(
-        backgroundImage: NetworkImage(task.imageUrl),
-      ),
-      title: Text(task.title), // Displaying the ID for debugging purposes
-      subtitle: Text(
-        task.date ?? 'No date available',
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-      ),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            icon: Icon(
-              Icons.edit,
-              color: Colors.blue,
+    return SingleChildScrollView(
+      child: Dismissible(
+        key: Key(task.id ?? ''), // Use a unique key for each Dismissible
+        background: Container(
+          color: Colors.red,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Icon(
+                  Icons.delete,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ),
+        secondaryBackground: Container(
+          color: Colors.blue,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Icon(
+                  Icons.edit,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ),
+        onDismissed: (direction) {
+          if (direction == DismissDirection.endToStart) {
+            _showUpdateDialog(context, task);
+          } else if (direction == DismissDirection.startToEnd) {
+            _confirmDelete(context, task);
+          }
+        },
+        child: Container(
+            color: Color.fromARGB(255, 235, 247, 255), // Set background color here
+          child: ListTile(
+            leading: CircleAvatar(
+              backgroundImage: NetworkImage(task.imageUrl),
             ),
-            onPressed: () {
-              _showUpdateDialog(context, task);
+            title: Text(task.title),
+            subtitle: Text(
+              task.date ?? 'No date available',
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            onTap: () {
+              _showDescriptionModal(context, task);
             },
           ),
-          IconButton(
-            icon: Icon(
-              Icons.delete,
-              color: Colors.red,
-            ),
-            onPressed: () {
-              _confirmDelete(context, task);
-            },
-          ),
-        ],
+        ),
       ),
-      onTap: () {
-        _showDescriptionModal(context, task);
-      },
     );
   }
 
@@ -66,43 +88,46 @@ class TaskListTile extends StatelessWidget {
         return AlertDialog(
           title: Text('Update Task'),
           content: SingleChildScrollView(
-            child: Column(
-              children: [
-                TextField(
-                  controller: titleController,
-                  decoration: InputDecoration(labelText: 'Title'),
-                ),
-                TextField(
-                  controller: descriptionController,
-                  decoration: InputDecoration(labelText: 'Description'),
-                ),
-                TextField(
-                  controller: imageUrlController,
-                  decoration: InputDecoration(labelText: 'Image URL'),
-                ),
-                Row(
-                  children: [
-                    Text("Tanggal Pelaksanaan"),
-                    IconButton(
-                      icon: Icon(Icons.calendar_today),
-                      onPressed: () async {
-                        DateTime? pickedDate = await showDatePicker(
-                          context: context,
-                          initialDate: _selectedDate,
-                          firstDate: DateTime.now(),
-                          lastDate: DateTime.now().add(Duration(days: 365)),
-                        );
-                        if (pickedDate != null && pickedDate != _selectedDate) {
-                          _selectedDate = pickedDate;
-                        }
-                      },
-                    ),
-                    Text(
-                      "${_selectedDate.toLocal().day}/${_selectedDate.toLocal().month}/${_selectedDate.toLocal().year}",
-                    ),
-                  ],
-                ),
-              ],
+            child: IntrinsicWidth(
+              child: Column(
+                children: [
+                  TextField(
+                    controller: titleController,
+                    decoration: InputDecoration(labelText: 'Title'),
+                  ),
+                  TextField(
+                    controller: descriptionController,
+                    decoration: InputDecoration(labelText: 'Description'),
+                  ),
+                  TextField(
+                    controller: imageUrlController,
+                    decoration: InputDecoration(labelText: 'Image URL'),
+                  ),
+                  Row(
+                    children: [
+                      Text("Tanggal Pelaksanaan"),
+                      IconButton(
+                        icon: Icon(Icons.calendar_today),
+                        onPressed: () async {
+                          DateTime? pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: _selectedDate,
+                            firstDate: DateTime.now(),
+                            lastDate: DateTime.now().add(Duration(days: 365)),
+                          );
+                          if (pickedDate != null &&
+                              pickedDate != _selectedDate) {
+                            _selectedDate = pickedDate;
+                          }
+                        },
+                      ),
+                      Text(
+                        "${_selectedDate.toLocal().day}/${_selectedDate.toLocal().month}/${_selectedDate.toLocal().year}",
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
           actions: <Widget>[
@@ -183,7 +208,7 @@ class TaskListTile extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(task.title ?? "No Title available"),
+          // title: Text(task.title ?? "No Title available"),
           content: Container(
             width: MediaQuery.of(context).size.width * 0.7,
             height: MediaQuery.of(context).size.height * 0.6,
@@ -196,6 +221,21 @@ class TaskListTile extends StatelessWidget {
                     child: Image(
                       image: NetworkImage(task.imageUrl ?? ""),
                       fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Center(
+                    child: Text(
+                      task.title ?? 'No title available',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20, // Adjust the font size as needed
+                        fontWeight: FontWeight
+                            .bold, // You can adjust the font weight as needed
+                      ),
                     ),
                   ),
                 ),

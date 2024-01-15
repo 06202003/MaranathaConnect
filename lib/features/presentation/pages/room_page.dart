@@ -10,6 +10,7 @@ import 'package:flutter_firebase/features/presentation/routes/navigation_service
 import 'package:flutter_firebase/features/presentation/widgets/potential_ruangan.dart';
 import 'package:flutter_firebase/features/presentation/widgets/rekomendasi_ruangan.dart';
 import 'package:flutter_firebase/features/presentation/widgets/reservasi_ruangan.dart';
+import 'package:intl/intl.dart';
 
 class PinjamRuanganPage extends StatefulWidget {
   final NavigationService navigationService;
@@ -28,6 +29,8 @@ class _PinjamRuanganPageState extends State<PinjamRuanganPage> {
   late final GetRekomendasiRuanganUsecase getRekomendasiRuanganUsecase;
   late final GetPotensialRuanganUsecase getPotensialRuanganUsecase;
 
+  List<RuanganEntity> reservedRooms = []; // List to store reserved rooms
+
   @override
   void initState() {
     super.initState();
@@ -37,6 +40,21 @@ class _PinjamRuanganPageState extends State<PinjamRuanganPage> {
     getRekomendasiRuanganUsecase =
         GetRekomendasiRuanganUsecase(ruanganRepository);
     getPotensialRuanganUsecase = GetPotensialRuanganUsecase(ruanganRepository);
+
+    // Fetch and set the initial reserved rooms data
+    fetchReservedRooms();
+  }
+
+  Future<void> fetchReservedRooms() async {
+    final ruanganData = await RuanganDatasource().getRuanganData();
+    // Select Ruangan A and Ruangan C from the list
+    final reservedRoomNames = ['Ruangan A', 'Ruangan C'];
+    reservedRooms = ruanganData
+        .where((ruangan) => reservedRoomNames.contains(ruangan.nama))
+        .map((model) => model.toEntity())
+        .toList();
+
+    setState(() {});
   }
 
   void navigateToPage(int index) {
@@ -48,7 +66,7 @@ class _PinjamRuanganPageState extends State<PinjamRuanganPage> {
         // This is the current page, you might not need to navigate anywhere.
         break;
       case 2:
-        widget.navigationService.navigateToPage('/chat');
+        widget.navigationService.navigateToPage('/doc');
         break;
       case 3:
         widget.navigationService.navigateToPage('/profile');
@@ -63,18 +81,18 @@ class _PinjamRuanganPageState extends State<PinjamRuanganPage> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text("Room Reservation"),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: () {
-              _scaffoldKey.currentState!.openEndDrawer();
-            },
-          ),
-        ],
+        // actions: <Widget>[
+        //   IconButton(
+        //     icon: const Icon(Icons.menu),
+        //     onPressed: () {
+        //       _scaffoldKey.currentState!.openEndDrawer();
+        //     },
+        //   ),
+        // ],
       ),
-      endDrawer: Drawer(
-        child: AppNavigation(),
-      ),
+      // endDrawer: Drawer(
+      //   child: AppNavigation(),
+      // ),
       body: FutureBuilder<List<RuanganEntity>>(
         future: getPotensialRuanganUsecase.execute(),
         builder: (context, potentialSnapshot) {
@@ -122,23 +140,75 @@ class _PinjamRuanganPageState extends State<PinjamRuanganPage> {
                     ),
                     PotensialRuanganList(potentialRooms: potentialRooms),
                     Container(
+                      width: double.infinity,
                       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                       child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
+                        onPressed: () async {
+                          // Open the reservation form and wait for result
+                          final reservedRoom = await Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => ReservationForm(),
                             ),
                           );
+                          // If the user submitted the form, add the reserved room to the list
+                          if (reservedRoom != null) {
+                            setState(() {
+                              reservedRooms.add(reservedRoom);
+                            });
+                          }
                         },
-                        style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(vertical: 15),
-                          minimumSize: Size(double.infinity, 0),
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all(Colors.orange),
+                          padding:
+                              MaterialStateProperty.all(EdgeInsets.all(16)),
                         ),
-                        child: Text('Pinjam Ruangan'),
+                        child: Text(
+                          'Pinjam Ruangan',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
+                    // Display the list of reserved rooms if there are any
+                    if (reservedRooms.isNotEmpty)
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: reservedRooms.length,
+                          itemBuilder: (context, index) {
+                            final ruangan = reservedRooms[index];
+                            // Format the date and time
+                            final formattedDate = DateFormat('dd-MM-yyyy HH:mm')
+                                .format(ruangan.reservationDate);
+                            final formattedStartTime = DateFormat('HH:mm')
+                                .format(ruangan.reservationStartTime);
+                            final formattedEndTime = DateFormat('HH:mm')
+                                .format(ruangan.reservationEndTime);
+
+                            return ListTile(
+                              title:
+                                  Text('Ruangan yang Dipesan: ${ruangan.nama}'),
+                              // You can customize the display of reserved rooms as needed
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Tanggal Reservasi: $formattedDate'),
+                                  Text(
+                                      'Waktu Reservasi: $formattedStartTime - $formattedEndTime'),
+                                  // Add any additional details you want to display
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      )
+                    else
+                      // Show a message if there are no reserved rooms
+                      Text('Belum ada ruangan yang dipinjam'),
                   ],
                 );
               }
@@ -156,22 +226,6 @@ class _PinjamRuanganPageState extends State<PinjamRuanganPage> {
           navigateToPage(index);
         },
       ),
-    );
-  }
-}
-
-class DrawerMenuItem extends StatelessWidget {
-  final String title;
-  final VoidCallback onTap;
-
-  const DrawerMenuItem({Key? key, required this.title, required this.onTap})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(title),
-      onTap: onTap,
     );
   }
 }
