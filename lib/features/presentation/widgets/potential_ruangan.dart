@@ -19,7 +19,7 @@ class PotensialRuanganList extends StatelessWidget {
                 itemBuilder: (context, index) {
                   RuanganEntity room = potentialRooms[index];
                   return Container(
-                    width: 200,
+                    width: 275,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -29,7 +29,7 @@ class PotensialRuanganList extends StatelessWidget {
                           child: Image.network(
                             room.imageUrl,
                             height: 150,
-                            width: 150,
+                            width: 200,
                             fit: BoxFit.cover,
                           ),
                         ),

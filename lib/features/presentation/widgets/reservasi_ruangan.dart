@@ -2,6 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_firebase/features/data/datasources/ruangan_remote_datasource.dart';
 import 'package:flutter_firebase/features/data/models/ruangan_model.dart';
 
+class ReservedRoom {
+  final String nama;
+  final DateTime reservationDate;
+
+  ReservedRoom({required this.nama, required this.reservationDate});
+}
+
 class ReservationForm extends StatefulWidget {
   @override
   _ReservationFormState createState() => _ReservationFormState();
@@ -117,12 +124,24 @@ class _ReservationFormState extends State<ReservationForm> {
                 ),
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
-                    // Add logic to submit reservation
-                    // You may want to use the values from _ruanganController, _selectedDate, and _selectedTime
-                    // For example: String ruanganName = _ruanganController.text;
-                    // DateTime reservationDateTime = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day, _selectedTime.hour, _selectedTime.minute);
-                    // Then you can proceed with your logic
-                    // After submitting, you may want to navigate back or show a success message
+                    // Get the selected values from the form
+                    String ruanganName = _ruanganController.text;
+                    DateTime reservationDateTime = DateTime(
+                      _selectedDate.year,
+                      _selectedDate.month,
+                      _selectedDate.day,
+                      _selectedTime.hour,
+                      _selectedTime.minute,
+                    );
+
+                    // Create a reserved room object
+                    ReservedRoom reservedRoom = ReservedRoom(
+                      nama: ruanganName,
+                      reservationDate: reservationDateTime,
+                    );
+
+                    // Pass the reserved room data back to the previous page
+                    Navigator.pop(context, reservedRoom);
                   }
                 },
                 child: Text(
@@ -133,7 +152,7 @@ class _ReservationFormState extends State<ReservationForm> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),

@@ -73,11 +73,13 @@ class _ProfilePageState extends State<ProfilePage> {
     TextEditingController displayNameController = TextEditingController();
     TextEditingController organizationController = TextEditingController();
     TextEditingController numberController = TextEditingController();
+    TextEditingController aboutController = TextEditingController();
 
     // Initialize controllers with current values
     displayNameController.text = _userProfile?['displayName'] ?? '';
     organizationController.text = _userProfile?['organization'] ?? '';
     numberController.text = _userProfile?['number'] ?? '';
+    aboutController.text = _userProfile?['about'] ?? '';
 
     showDialog(
       context: context,
@@ -99,6 +101,10 @@ class _ProfilePageState extends State<ProfilePage> {
                   controller: numberController,
                   decoration: InputDecoration(labelText: 'Number'),
                 ),
+                TextFormField(
+                  controller: aboutController,
+                  decoration: InputDecoration(labelText: 'About'),
+                ),
               ],
             ),
           ),
@@ -115,12 +121,15 @@ class _ProfilePageState extends State<ProfilePage> {
                 String displayName = displayNameController.text;
                 String organization = organizationController.text;
                 String number = numberController.text;
+                String about = aboutController.text;
 
                 if (displayName.isNotEmpty &&
                     organization.isNotEmpty &&
-                    number.isNotEmpty) {
+                    number.isNotEmpty &&
+                    about.isNotEmpty) {
                   // Update user profile
-                  await _updateUserProfile(displayName, organization, number);
+                  await _updateUserProfile(
+                      displayName, organization, number, about);
                   Navigator.of(context).pop(); // Close the dialog
                 } else {
                   // Show an error message or handle validation
@@ -139,8 +148,8 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Future<void> _updateUserProfile(
-      String displayName, String organization, String number) async {
+  Future<void> _updateUserProfile(String displayName, String organization,
+      String number, String about) async {
     try {
       await FirestoreService().updateUserProfile(
         _user!.uid,
@@ -149,6 +158,7 @@ class _ProfilePageState extends State<ProfilePage> {
         _userProfile?['imgUrl'] ?? '',
         organization,
         number,
+        about,
       );
 
       // Reload the user profile after updating
@@ -178,173 +188,192 @@ class _ProfilePageState extends State<ProfilePage> {
       // endDrawer: Drawer(
       //   child: AppNavigation(),
       // ),
-      body: Container(
-        color: Colors.grey[50], // Set the background color for the entire page
-        child: _userProfile != null
-            ? Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Center(
-                      child: CircleAvatar(
-                        radius: 100,
-                        backgroundImage: NetworkImage(
-                          _userProfile?['imgUrl'] ?? '',
+      body: SingleChildScrollView(
+        child: Container(
+          color:
+              Colors.grey[50], // Set the background color for the entire page
+          child: _userProfile != null
+              ? Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: CircleAvatar(
+                          radius: 100,
+                          backgroundImage: NetworkImage(
+                            _userProfile?['imgUrl'] ?? '',
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(height: 20),
-                    Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(
-                            15.0), // Adjust the border radius as needed
-                        color: Colors.white,
+                      SizedBox(height: 20),
+                      Container(
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(
+                              15.0), // Adjust the border radius as needed
+                          color: Colors.white,
+                        ),
+                        padding: EdgeInsets.all(10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Display Name:',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue,
+                              ),
+                            ),
+                            Text(
+                              _userProfile?['displayName'] ?? '',
+                              style: TextStyle(fontSize: 18),
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              'Email:',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue,
+                              ),
+                            ),
+                            Text(
+                              _userProfile?['email'] ?? '',
+                              style: TextStyle(fontSize: 18),
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              'Organization:',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue,
+                              ),
+                            ),
+                            Text(
+                              _userProfile?['organization'] ?? '',
+                              style: TextStyle(fontSize: 18),
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              'Number:',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue,
+                              ),
+                            ),
+                            Text(
+                              _userProfile?['number'] ?? '',
+                              style: TextStyle(fontSize: 18),
+                            ),
+                            SizedBox(height: 10),
+                            Text(
+                              'About:',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue,
+                              ),
+                            ),
+                            Text(
+                              _userProfile?['about'] ?? '',
+                              style: TextStyle(
+                                fontSize: 18,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      padding: EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Display Name:',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue,
-                            ),
-                          ),
-                          Text(
-                            _userProfile?['displayName'] ?? '',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            'Email:',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue,
-                            ),
-                          ),
-                          Text(
-                            _userProfile?['email'] ?? '',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            'Organization:',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue,
-                            ),
-                          ),
-                          Text(
-                            _userProfile?['organization'] ?? '',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            'Number:',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue,
-                            ),
-                          ),
-                          Text(
-                            _userProfile?['number'] ?? '',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        ],
-                      ),
-                    ),
 
-                    SizedBox(height: 10),
-                    // Use Container to set background color for each data section
-                    Container(
-                      padding: EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          ElevatedButton(
-                            style: ButtonStyle(
-                              backgroundColor:
-                                  MaterialStateProperty.all(Colors.orange),
-                              padding:
-                                  MaterialStateProperty.all(EdgeInsets.all(16)),
-                            ),
-                            onPressed: () {
-                              _showUpdateProfileDialog(context);
-                            },
-                            child: Text(
-                              "Update Profile",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
+                      SizedBox(height: 10),
+                      // Use Container to set background color for each data section
+                      Container(
+                        padding: EdgeInsets.all(10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            ElevatedButton(
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all(Colors.orange),
+                                padding: MaterialStateProperty.all(
+                                    EdgeInsets.all(16)),
+                              ),
+                              onPressed: () {
+                                _showUpdateProfileDialog(context);
+                              },
+                              child: Text(
+                                "Update Profile",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
-                          ),
-                          SizedBox(height: 10),
-                          ElevatedButton(
-                            style: ButtonStyle(
-                              backgroundColor:
-                                  MaterialStateProperty.all(Colors.red),
-                              padding:
-                                  MaterialStateProperty.all(EdgeInsets.all(16)),
-                            ),
-                            onPressed: () async {
-                              await handleSignOut();
-                              Navigator.pushReplacementNamed(context, '/login');
-                            },
-                            child: Text(
-                              "Logout",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
+                            SizedBox(height: 10),
+                            ElevatedButton(
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all(Colors.red),
+                                padding: MaterialStateProperty.all(
+                                    EdgeInsets.all(16)),
+                              ),
+                              onPressed: () async {
+                                await handleSignOut();
+                                Navigator.pushReplacementNamed(
+                                    context, '/login');
+                              },
+                              child: Text(
+                                "Logout",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
-                          ),
-                          SizedBox(height: 20),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              _buildSocialMediaIcon(
-                                imagePath: 'assets/instagram.jpeg',
-                                onPressed: () {
-                                  _launchURL(
-                                      'https://www.instagram.com/yz.jsx/');
-                                },
-                              ),
-                              SizedBox(width: 20),
-                              _buildSocialMediaIcon(
-                                imagePath: 'assets/twitter.png',
-                                onPressed: () {
-                                  _launchURL('https://twitter.com/NdutzYz');
-                                },
-                              ),
-                              SizedBox(width: 20),
-                              _buildSocialMediaIcon(
-                                imagePath:
-                                    'assets/wa.png', // Assuming you have an image asset for WhatsApp
-                                onPressed: () {
-                                  _launchWhatsApp();
-                                },
-                              ),
-                            ],
-                          ),
-                        ],
+                            SizedBox(height: 20),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _buildSocialMediaIcon(
+                                  imagePath: 'assets/instagram.jpeg',
+                                  onPressed: () {
+                                    _launchURL(
+                                        'https://www.instagram.com/yz.jsx/');
+                                  },
+                                ),
+                                SizedBox(width: 20),
+                                _buildSocialMediaIcon(
+                                  imagePath: 'assets/twitter.png',
+                                  onPressed: () {
+                                    _launchURL('https://twitter.com/NdutzYz');
+                                  },
+                                ),
+                                SizedBox(width: 20),
+                                _buildSocialMediaIcon(
+                                  imagePath:
+                                      'assets/wa.png', // Assuming you have an image asset for WhatsApp
+                                  onPressed: () {
+                                    _launchWhatsApp();
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                )
+              : Center(
+                  child: CircularProgressIndicator(),
                 ),
-              )
-            : Center(
-                child: CircularProgressIndicator(),
-              ),
+        ),
       ),
       bottomNavigationBar: MyBottomNavigationBar(
         navigationService: widget.navigationService,

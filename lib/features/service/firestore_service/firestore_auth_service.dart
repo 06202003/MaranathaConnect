@@ -10,6 +10,7 @@ class FirestoreService {
     String imgUrl,
     String organization,
     String number,
+    String about,
   ) async {
     return _firestore.collection('users').doc(uid).set({
       'displayName': displayName,
@@ -17,6 +18,7 @@ class FirestoreService {
       'imgUrl': imgUrl,
       'organization': organization,
       'number': number,
+      'about': about,
     });
   }
 

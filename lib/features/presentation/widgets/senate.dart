@@ -67,26 +67,72 @@ class _SenatNeedsListWidgetState extends State<SenatNeedsListWidget> {
                 shrinkWrap: true,
                 itemCount: senateNeeds.length,
                 itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(
-                      senateNeeds[index]['category'] ?? '',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                  return Dismissible(
+                    key: Key(senateNeeds[index]['category']),
+                    background: Container(
+                      color: Colors.red,
+                      alignment: Alignment.centerLeft,
+                      padding: EdgeInsets.only(right: 16.0),
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                            left: 16.0), // Add margin to the right
+                        child: Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (senateNeeds[index]['needs'] != null &&
-                            senateNeeds[index]['needs'].isNotEmpty)
-                          for (int i = 0;
-                              i < senateNeeds[index]['needs'].length;
-                              i++)
-                            Container(
-                              margin: EdgeInsets.only(
-                                  left: 16), // Adjust the left margin as needed
-                              child: Text(
-                                  '${i + 1}. ${senateNeeds[index]['needs'][i]}'),
-                            ),
-                      ],
+                    secondaryBackground: Container(
+                      color: Colors.blue,
+                      alignment: Alignment.centerRight,
+                      padding: EdgeInsets.only(left: 16.0),
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                            right: 16.0), // Add margin to the right
+                        child: Icon(
+                          Icons.edit,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                    onDismissed: (direction) {
+                      if (direction == DismissDirection.startToEnd) {
+                        // Swipe right to delete
+                        setState(() {
+                          senateNeeds.removeAt(index);
+                        });
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Deleted'),
+                          ),
+                        );
+                      } else if (direction == DismissDirection.endToStart) {
+                        // Swipe left to edit
+                        _showEditItemModal(context, index);
+                      }
+                    },
+                    child: ListTile(
+                      title: Text(
+                        senateNeeds[index]['category'] ?? '',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (senateNeeds[index]['needs'] != null &&
+                              senateNeeds[index]['needs'].isNotEmpty)
+                            for (int i = 0;
+                                i < senateNeeds[index]['needs'].length;
+                                i++)
+                              Container(
+                                margin: EdgeInsets.only(
+                                    left:
+                                        16), // Adjust the left margin as needed
+                                child: Text(
+                                    '${i + 1}. ${senateNeeds[index]['needs'][i]}'),
+                              ),
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -139,7 +185,7 @@ class _SenatNeedsListWidgetState extends State<SenatNeedsListWidget> {
               TextField(
                 controller: descriptionController,
                 decoration: InputDecoration(
-                  labelText: 'Description',
+                  labelText: 'Description (Separate items with commas)',
                 ),
               ),
               SizedBox(height: 16.0),
@@ -152,9 +198,13 @@ class _SenatNeedsListWidgetState extends State<SenatNeedsListWidget> {
                   ),
                   onPressed: () {
                     setState(() {
+                      String description = descriptionController.text;
+                      List<String> needs =
+                          description.split(',').map((e) => e.trim()).toList();
+
                       senateNeeds.add({
                         'category': titleController.text,
-                        'needs': [descriptionController.text],
+                        'needs': needs,
                       });
                       titleController.clear();
                       descriptionController.clear();
@@ -173,6 +223,74 @@ class _SenatNeedsListWidgetState extends State<SenatNeedsListWidget> {
               ),
             ],
           ),
+        );
+      },
+    );
+  }
+
+  void _showEditItemModal(BuildContext context, int index) {
+    titleController.text = senateNeeds[index]['category'];
+    descriptionController.text = senateNeeds[index]['needs'].join(', ');
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.3,
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  TextField(
+                    controller: titleController,
+                    decoration: InputDecoration(
+                      labelText: 'Title',
+                    ),
+                  ),
+                  SizedBox(height: 8.0),
+                  TextField(
+                    controller: descriptionController,
+                    decoration: InputDecoration(
+                      labelText: 'Description (Separate items with commas)',
+                    ),
+                  ),
+                  SizedBox(height: 16.0),
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(Colors.orange),
+                      padding: MaterialStateProperty.all(EdgeInsets.all(16)),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        String description = descriptionController.text;
+                        List<String> needs = description
+                            .split(',')
+                            .map((e) => e.trim())
+                            .toList();
+
+                        senateNeeds[index]['category'] = titleController.text;
+                        senateNeeds[index]['needs'] = needs;
+                      });
+                      titleController.clear();
+                      descriptionController.clear();
+                      Navigator.pop(context); // Close the modal
+                    },
+                    child: Text(
+                      'Edit List Kebutuhan Senat',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
         );
       },
     );

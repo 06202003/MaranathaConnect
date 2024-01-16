@@ -14,6 +14,7 @@ import 'package:flutter_firebase/features/presentation/pages/login_page.dart';
 import 'package:flutter_firebase/features/presentation/pages/sign_up_page.dart';
 import 'package:flutter_firebase/features/presentation/pages/room_page.dart';
 import 'package:flutter_firebase/features/presentation/routes/navigation_service.dart';
+import 'package:flutter_firebase/features/presentation/widgets/program_kerja_images.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 Future main() async {
@@ -30,7 +31,7 @@ Future main() async {
   } else {
     await Firebase.initializeApp();
   }
-  
+
   final PdfDataSource pdfDataSource = PdfDataSource();
   final PdfRepository pdfRepository = PdfRepositoryImpl(pdfDataSource);
   final PdfUseCase pdfUseCase = PdfUseCase(pdfRepository);
@@ -46,7 +47,7 @@ class MyApp extends StatelessWidget {
   final PdfUseCase pdfUseCase;
 
   MyApp({required this.pdfUseCase});
-    @override
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       navigatorKey: _navigationService.navigatorKey,
@@ -55,20 +56,21 @@ class MyApp extends StatelessWidget {
       theme: appTheme,
       routes: {
         '/': (context) => SplashScreen(
-          child: LoginPage(),
-        ),
+              child: LoginPage(),
+            ),
         '/login': (context) => LoginPage(),
         '/signUp': (context) => SignUpPage(),
         '/home': (context) => HomePage(navigationService: _navigationService),
-        '/room': (context) => PinjamRuanganPage(navigationService: _navigationService),
+        '/room': (context) =>
+            PinjamRuanganPage(navigationService: _navigationService),
         '/doc': (context) => PdfPage(
-          navigationService: _navigationService,
-          pdfUseCase: pdfUseCase,
-        ),
-        '/profile': (context) => ProfilePage(navigationService: _navigationService),
+              navigationService: _navigationService,
+              pdfUseCase: pdfUseCase,
+            ),
+        '/profile': (context) =>
+            ProfilePage(navigationService: _navigationService),
+        '/program_kerja_images': (context) => ProgramKerjaImagesPage(),
       },
     );
   }
 }
-
-

@@ -23,6 +23,10 @@ class _PdfListScreenState extends State<PdfListScreen> {
     pdfList = widget.pdfUseCase.getPdfList();
   }
 
+  void navigateToProgramKerjaImagesPage() {
+    Navigator.pushNamed(context, '/program_kerja_images');
+  }
+
   Future<void> _showPdfDetailDialog(PdfEntity pdfEntity) async {
     return showDialog<void>(
       context: context,
@@ -112,64 +116,96 @@ class _PdfListScreenState extends State<PdfListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          automaticallyImplyLeading: false, title: Text('Proposal dan LPJ')),
-      body: FutureBuilder<List<PdfEntity>>(
-        future: pdfList,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}'),
-            );
-          } else if (snapshot.hasData) {
-            List<PdfEntity> pdfListData = snapshot.data!;
-            return ListView.builder(
-              itemCount: pdfListData.length,
-              itemBuilder: (context, index) {
-                PdfEntity pdfEntity = pdfListData[index];
-                return Card(
-                  elevation: 5,
-                  margin: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  color: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: ListTile(
-                    contentPadding: EdgeInsets.all(10),
-                    title: Text(
-                      pdfEntity.judul ?? 'No Title',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    subtitle: Text(
-                      'Penulis: ${pdfEntity.penulis ?? 'No Author'}',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    trailing: Icon(
-                      Icons.arrow_forward,
-                      color: Colors.teal,
-                    ),
-                    onTap: () {
-                      _showPdfDetailDialog(pdfEntity);
-                    },
-                  ),
-                );
+        automaticallyImplyLeading: false,
+        title: Text('Proposal dan LPJ'),
+      ),
+      body: Column(
+        children: [
+          SizedBox(height: 16.0),
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+            child: ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Colors.orange),
+                padding: MaterialStateProperty.all(EdgeInsets.all(16)),
+              ),
+              onPressed: () {
+                Navigator.pushNamed(context, '/program_kerja_images');
               },
-            );
-          } else {
-            return Center(
-              child: Text('No PDFs available.'),
-            );
-          }
-        },
+              child: Text(
+                'Dokumentasi Program Kerja',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          SizedBox(height: 16.0),
+          Expanded(
+            child: FutureBuilder<List<PdfEntity>>(
+              future: pdfList,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Error: ${snapshot.error}'),
+                  );
+                } else if (snapshot.hasData) {
+                  List<PdfEntity> pdfListData = snapshot.data!;
+                  return ListView.builder(
+                    itemCount: pdfListData.length,
+                    itemBuilder: (context, index) {
+                      PdfEntity pdfEntity = pdfListData[index];
+                      return Card(
+                        elevation: 5,
+                        margin:
+                            EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        color: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        child: ListTile(
+                          contentPadding: EdgeInsets.all(10),
+                          title: Text(
+                            pdfEntity.judul ?? 'No Title',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          subtitle: Text(
+                            'Penulis: ${pdfEntity.penulis ?? 'No Author'}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          trailing: Icon(
+                            Icons.arrow_forward,
+                            color: Colors.teal,
+                          ),
+                          onTap: () {
+                            _showPdfDetailDialog(pdfEntity);
+                          },
+                        ),
+                      );
+                    },
+                  );
+                } else {
+                  return Center(
+                    child: Text('No PDFs available.'),
+                  );
+                }
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

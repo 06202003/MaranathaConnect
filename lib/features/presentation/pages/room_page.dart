@@ -49,7 +49,7 @@ class _PinjamRuanganPageState extends State<PinjamRuanganPage> {
   Future<void> fetchReservedRooms() async {
     final ruanganData = await RuanganDatasource().getRuanganData();
     // Select Ruangan A and Ruangan C from the list
-    final reservedRoomNames = ['Ruangan A', 'Ruangan C'];
+    final reservedRoomNames = ['Internet 2', 'Theatre GAP'];
     reservedRooms = ruanganData
         .where((ruangan) => reservedRoomNames.contains(ruangan.nama))
         .map((model) => model.toEntity())
@@ -152,6 +152,7 @@ class _PinjamRuanganPageState extends State<PinjamRuanganPage> {
                               builder: (context) => ReservationForm(),
                             ),
                           );
+
                           // If the user submitted the form, add the reserved room to the list
                           if (reservedRoom != null) {
                             setState(() {
