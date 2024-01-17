@@ -170,29 +170,32 @@ class _PdfListScreenState extends State<PdfListScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
-                        child: ListTile(
-                          contentPadding: EdgeInsets.all(10),
-                          title: Text(
-                            pdfEntity.judul ?? 'No Title',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                        child: Container(
+                          color: Colors.lightBlue[50],
+                          child: ListTile(
+                            contentPadding: EdgeInsets.all(10),
+                            title: Text(
+                              pdfEntity.judul ?? 'No Title',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          subtitle: Text(
-                            'Penulis: ${pdfEntity.penulis ?? 'No Author'}',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
+                            subtitle: Text(
+                              'Penulis: ${pdfEntity.penulis ?? 'No Author'}',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                              ),
                             ),
+                            trailing: Icon(
+                              Icons.arrow_forward,
+                              color: Colors.teal,
+                            ),
+                            onTap: () {
+                              _showPdfDetailDialog(pdfEntity);
+                            },
                           ),
-                          trailing: Icon(
-                            Icons.arrow_forward,
-                            color: Colors.teal,
-                          ),
-                          onTap: () {
-                            _showPdfDetailDialog(pdfEntity);
-                          },
                         ),
                       );
                     },

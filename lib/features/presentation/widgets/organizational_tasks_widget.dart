@@ -39,17 +39,21 @@ class OrganizationalTasksWidget extends ConsumerWidget {
           },
           child: SingleChildScrollView(
             child: Container(
-              padding: EdgeInsets.all(16.0),
+              // padding: EdgeInsets.all(16.0),
               color: Color.fromARGB(255, 235, 247,
                   255), // Set the background color for the entire column
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    "Program Senat Mahasiswa",
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(
+                        16, 8, 0, 0), // Adjust the padding value as needed
+                    child: Text(
+                      "Program Senat Mahasiswa",
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   for (int index = 0; index < taskEntities.length; index++)

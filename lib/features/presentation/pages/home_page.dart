@@ -77,7 +77,7 @@ class HomePage extends ConsumerWidget {
                 "Program Kerja SEMAFIT 2023/2024",
                 style: TextStyle(
                   color: Colors.black, // Set the text color
-                  fontSize: 18.0,
+                  fontSize: 22.0,
                   fontWeight: FontWeight.bold,
                 ),
               ),

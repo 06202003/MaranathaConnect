@@ -48,17 +48,21 @@ class _SenatNeedsListWidgetState extends State<SenatNeedsListWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        padding: EdgeInsets.all(16.0),
+        // padding: EdgeInsets.all(16.0),
         color: Colors.white,
         height: MediaQuery.of(context).size.height,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Kebutuhan Senat Mahasiswa",
-              style: TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                  16, 8, 0, 0), // Adjust the padding value as needed
+              child: Text(
+                "Kebutuhan Senat Mahasiswa",
+                style: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             SizedBox(height: 10.0),
@@ -72,7 +76,7 @@ class _SenatNeedsListWidgetState extends State<SenatNeedsListWidget> {
                     background: Container(
                       color: Colors.red,
                       alignment: Alignment.centerLeft,
-                      padding: EdgeInsets.only(right: 16.0),
+                      // padding: EdgeInsets.only(right: 16.0),
                       child: Padding(
                         padding: EdgeInsets.only(
                             left: 16.0), // Add margin to the right
@@ -141,6 +145,7 @@ class _SenatNeedsListWidgetState extends State<SenatNeedsListWidget> {
             SizedBox(height: 16.0),
             Container(
               width: double.infinity,
+              margin: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               child: ElevatedButton(
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all(Colors.orange),

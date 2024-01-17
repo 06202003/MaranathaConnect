@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_firebase/features/data/datasources/image_proker_datasource.dart';
+import 'package:path_provider/path_provider.dart'; // Import the path_provider package
 
 class ProgramKerjaImagesPage extends StatelessWidget {
   @override
@@ -66,10 +69,22 @@ class ProgramKerjaImagesPage extends StatelessWidget {
           content: Text('Do you want to download this image?'),
           actions: [
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 // Perform the download logic here
-                // For example, you can use a package like path_provider to get the app's documents directory
-                // and copy the image file there.
+                // Get the app's documents directory
+                Directory documentsDirectory = await getApplicationDocumentsDirectory();
+                String destinationPath = '${documentsDirectory.path}/downloaded_image.png';
+
+                // Copy the image file to the documents directory
+                await File(imagePath).copy(destinationPath);
+
+                // Notify the user that the download is complete
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Download complete!'),
+                  ),
+                );
+
                 Navigator.of(context).pop();
               },
               child: Text('Download'),
